@@ -4,6 +4,13 @@ import { PrismaClient } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { extractTextFromResume } from '../services/resumeParser';
 
+interface MulterFile {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+  size: number;
+}
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -31,7 +38,12 @@ router.post('/', authenticate, upload.single('resume'), async (req: AuthRequest,
     }
 
     // Extract text from resume
-    const parsedText = await extractTextFromResume(req.file);
+    const file: { buffer: Buffer; mimetype: string; originalname: string } = {
+      buffer: req.file.buffer,
+      mimetype: req.file.mimetype,
+      originalname: req.file.originalname
+    };
+    const parsedText = await extractTextFromResume(file);
 
     // Save to database
     const resume = await prisma.resume.create({

@@ -1,8 +1,13 @@
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
-import { File } from 'multer';
 
-export async function extractTextFromResume(file: File): Promise<string> {
+interface UploadedFile {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+}
+
+export async function extractTextFromResume(file: UploadedFile): Promise<string> {
   try {
     if (file.mimetype === 'application/pdf') {
       const data = await pdfParse(file.buffer);

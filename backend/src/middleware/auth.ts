@@ -28,7 +28,11 @@ export const authenticate = (
     ) as { userId: string; email: string; role: string };
 
     req.userId = decoded.userId;
-    req.user = decoded;
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role
+    };
 
     next();
   } catch (error) {
