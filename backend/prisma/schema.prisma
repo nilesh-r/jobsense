@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  passwordHash String @map("password_hash")
+  role      String   @default("user") // user, admin
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  resumes   Resume[]
+  jobs      Job[]
+  analyses  Analysis[]
+
+  @@map("users")
+}
+
+model Resume {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  originalFileName String @map("original_file_name")
+  fileUrl       String?  @map("file_url")
+  parsedText    String?  @map("parsed_text") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses  Analysis[]
+
+  @@map("resumes")
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  title     String
+  companyName String @map("company_name")
+  jdText    String   @map("jd_text") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses  Analysis[]
+
+  @@map("jobs")
+}
+
+model Analysis {
+  id                    String   @id @default(cuid())
+  userId                String   @map("user_id")
+  resumeId              String   @map("resume_id")
+  jobId                 String   @map("job_id")
+  atsScore              Int      @map("ats_score")
+  keywordMatchScore     Int?     @map("keyword_match_score")
+  skillsMatchScore      Int?     @map("skills_match_score")
+  experienceMatchScore  Int?     @map("experience_match_score")
+  embeddingSimilarity   Float?   @map("embedding_similarity")
+  missingKeywords       Json?    @map("missing_keywords")
+  partialMatchKeywords  Json?    @map("partial_match_keywords")
+  suggestions           Json?    @map("suggestions")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume  Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  job     Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("analyses")
+}
+
