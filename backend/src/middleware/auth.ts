@@ -1,42 +1,48 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import jwt from "jsonwebtoken";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: string;
+}
 
 export interface AuthRequest extends Request {
   userId?: string;
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
+  authUser?: AuthUser; // NOTE: 'user' nahi, 'authUser'
 }
 
-export const authenticate = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+const JWT_SECRET = process.env.JWT_SECRET || "default-secret";
+
+export const authenticate: RequestHandler = (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : undefined;
 
     if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
+      return res.status(401).json({ error: "No token provided" });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET!
-    ) as { userId: string; email: string; role: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      userId: string;
+      email: string;
+      role: string;
+    };
 
-    req.userId = decoded.userId;
-    req.user = {
+    const authReq = req as AuthRequest;
+
+    authReq.userId = decoded.userId;
+    authReq.authUser = {
       id: decoded.userId,
       email: decoded.email,
-      role: decoded.role
+      role: decoded.role,
     };
 
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 };
 
