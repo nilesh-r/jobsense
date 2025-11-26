@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User as PrismaUser } from '@prisma/client';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
@@ -36,17 +36,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         callbackURL:
           process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
       },
-      async (accessToken, refreshToken, profile: any, done) => {
+      async (accessToken, refreshToken, profile, done) => {
         try {
           const email = profile.emails?.[0]?.value || '';
 
           // Full DB user
-          let dbUser = await prisma.user.findUnique({
+          let dbUser: PrismaUser | null = await prisma.user.findUnique({
             where: { email },
           });
 
           if (!dbUser) {
-            // New user
+            // Create new user (no select here!)
             dbUser = await prisma.user.create({
               data: {
                 name:
@@ -76,7 +76,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
           return done(null, safeUser);
         } catch (error) {
-          // ⬇️ yahi change hai
+          // null second argument types ke hisaab se allowed nahi, isliye sirf error
           return done(error as any);
         }
       }
@@ -105,6 +105,7 @@ router.get(
         );
       }
 
+      // Generate JWT
       const token = jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
         JWT_SECRET,

@@ -1,41 +1,37 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
   userId?: string;
-  authUser?: {
+  user?: {
     id: string;
     email: string;
     role: string;
   };
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
-
-export const authenticate: RequestHandler = (req, res, next) => {
+export const authenticate = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.startsWith('Bearer ')
-      ? authHeader.split(' ')[1]
-      : undefined;
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as {
-      userId: string;
-      email: string;
-      role: string;
-    };
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    ) as { userId: string; email: string; role: string };
 
-    const authReq = req as AuthRequest;
-
-    authReq.userId = decoded.userId;
-    authReq.authUser = {
+    req.userId = decoded.userId;
+    req.user = {
       id: decoded.userId,
       email: decoded.email,
-      role: decoded.role,
+      role: decoded.role
     };
 
     next();
