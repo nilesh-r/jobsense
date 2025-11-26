@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
@@ -45,11 +45,13 @@ router.post('/register', async (req, res) => {
 
     // Generate JWT
     const jwtSecret = process.env.JWT_SECRET || 'default-secret';
-    const expiresIn = (process.env.JWT_EXPIRES_IN || '7d') as string;
+    const signOptions: SignOptions = {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    };
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       jwtSecret,
-      { expiresIn }
+      signOptions
     );
 
     res.status(201).json({
@@ -89,11 +91,13 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT
     const jwtSecret = process.env.JWT_SECRET || 'default-secret';
-    const expiresIn = (process.env.JWT_EXPIRES_IN || '7d') as string;
+    const signOptions: SignOptions = {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    };
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       jwtSecret,
-      { expiresIn }
+      signOptions
     );
 
     res.json({
