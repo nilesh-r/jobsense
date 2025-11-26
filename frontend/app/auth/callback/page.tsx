@@ -1,51 +1,88 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { setAuth } from '@/lib/auth';
-import api from '@/lib/api';
-import toast from 'react-hot-toast';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+// Simple User type (same shape as frontend auth helper)
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+// YOUR backend base URL
+const API_BASE = "https://jobsense.onrender.com";
+
+// Local copy of setAuth to avoid importing anything SSR-unsafe
+const setAuth = (token: string, user: User) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(user));
+};
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const error = searchParams.get('error');
+    const run = async () => {
+      try {
+        // Read query params from current URL
+        const url = new URL(window.location.href);
+        const token = url.searchParams.get("token");
+        const error = url.searchParams.get("error");
 
-    if (error) {
-      toast.error('Authentication failed');
-      router.push('/login');
-      return;
-    }
+        // If Google sent error OR no token → back to login
+        if (error || !token) {
+          router.replace("/login");
+          return;
+        }
 
-    if (token) {
-      // Get user info with the token
-      api
-        .get('/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setAuth(token, response.data.user);
-          toast.success('Login successful!');
-          router.push('/dashboard');
-        })
-        .catch(() => {
-          toast.error('Failed to authenticate');
-          router.push('/login');
+        // Verify token with backend
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-    } else {
-      router.push('/login');
-    }
-  }, [searchParams, router]);
+
+        if (!res.ok) {
+          // Invalid / expired token or server error → back to login
+          console.error(
+            "GET /api/auth/me failed:",
+            res.status,
+            await res.text()
+          );
+          router.replace("/login");
+          return;
+        }
+
+        const data = await res.json();
+        const apiUser = data.user;
+
+        const user: User = {
+          id: apiUser.id,
+          name: apiUser.name,
+          email: apiUser.email,
+          role: apiUser.role,
+        };
+
+        // Save auth in localStorage
+        setAuth(token, user);
+
+        // Go to main app
+        router.replace("/dashboard");
+      } catch (err) {
+        console.error("Auth callback error:", err);
+        router.replace("/login");
+      }
+    };
+
+    run();
+  }, [router]);
 
   return (
-    <div className="crystal-bg min-h-screen flex items-center justify-center">
-      <div className="text-center text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-        <p>Completing authentication...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Completing authentication...</p>
     </div>
   );
 }
