@@ -17,13 +17,41 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // -------- CORS CONFIG --------
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+const defaultCorsOrigins = [
+  'http://localhost:3000',
+  'https://jobsense.onrender.com',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+const allowedOrigins = (
+  process.env.CORS_ORIGIN || defaultCorsOrigins.join(',')
+)
   .split(',')
-  .map(origin => origin.trim());
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+const dynamicOriginPatterns = [
+  /\.vercel\.app$/,
+  /\.onrender\.com$/,
+  /\.railway\.app$/,
+  /\.fly\.dev$/,
+  /\.netlify\.app$/,
+];
+
+const isOriginAllowed = (origin?: string) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return dynamicOriginPatterns.some(pattern => pattern.test(origin));
+};
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true,
   })
 );

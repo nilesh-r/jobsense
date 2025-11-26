@@ -12,6 +12,23 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
 const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
   (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
 
+const normalizeEmail = (value?: string) =>
+  value?.trim().toLowerCase() || '';
+
+const FRONTEND_URL =
+  (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+
+const buildFrontendUrl = (path: string, query?: Record<string, string>) => {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const url = new URL(`${FRONTEND_URL}${normalizedPath}`);
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+  }
+  return url.toString();
+};
+
 type JwtPayload = {
   userId: string;
   email: string;
@@ -38,7 +55,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const email = profile.emails?.[0]?.value || '';
+          const email = normalizeEmail(profile.emails?.[0]?.value);
+
+          if (!email) {
+            return done(new Error('Google profile missing email'));
+          }
 
           // Full DB user
           let dbUser: PrismaUser | null = await prisma.user.findUnique({
@@ -98,11 +119,9 @@ router.get(
       const user = req.user as SafeUser | undefined;
 
       if (!user) {
-        return res.redirect(
-          `${
-            process.env.FRONTEND_URL || 'http://localhost:3000'
-          }/login?error=google_auth_failed`
-        );
+      return res.redirect(
+        buildFrontendUrl('/login', { error: 'google_auth_failed' })
+      );
       }
 
       // Generate JWT
@@ -113,17 +132,11 @@ router.get(
       );
 
       // Redirect to frontend with token
-      res.redirect(
-        `${
-          process.env.FRONTEND_URL || 'http://localhost:3000'
-        }/auth/callback?token=${token}`
-      );
+      res.redirect(buildFrontendUrl('/auth/callback', { token }));
     } catch (error) {
       console.error('Google callback error:', error);
       res.redirect(
-        `${
-          process.env.FRONTEND_URL || 'http://localhost:3000'
-        }/login?error=google_auth_failed`
+        buildFrontendUrl('/login', { error: 'google_auth_failed' })
       );
     }
   }
@@ -133,14 +146,16 @@ router.get(
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
+    const trimmedName = (name || '').trim();
 
-    if (!name || !email || !password) {
+    if (!trimmedName || !normalizedEmail || !password) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -153,8 +168,8 @@ router.post('/register', async (req, res) => {
     // Create user
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: trimmedName,
+        email: normalizedEmail,
         passwordHash,
       },
       select: {
@@ -187,8 +202,9 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = normalizeEmail(email);
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res
         .status(400)
         .json({ error: 'Email and password are required' });
@@ -197,7 +213,7 @@ router.post('/login', async (req, res) => {
     // Find user (exclude soft-deleted)
     const user = await prisma.user.findFirst({
       where: {
-        email,
+        email: normalizedEmail,
         deletedAt: null,
       },
     });

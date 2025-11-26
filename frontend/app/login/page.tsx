@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CrystalElements from '@/components/CrystalElements';
 import DarkModeToggle from '@/components/DarkModeToggle';
-import api from '@/lib/api';
+import api, { API_URL } from '@/lib/api';
 import { setAuth } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
-// 👇 BACKEND base URL – env ho to woh use karo, warna Render URL
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || 'https://jobsense.onrender.com';
+// 👇 BACKEND base URL – env ho to woh use karo, warna fallback
+const API_BASE = API_URL;
 
 export default function LoginPage() {
   const router = useRouter();

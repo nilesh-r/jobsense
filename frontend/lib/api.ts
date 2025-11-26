@@ -1,6 +1,10 @@
 import axios, { AxiosHeaders } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const DEFAULT_API_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3001'
+    : 'https://jobsense.onrender.com';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
 
 const api = axios.create({
   baseURL: API_URL,

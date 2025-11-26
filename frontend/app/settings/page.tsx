@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AIChat from '@/components/AIChat';
 import { isAuthenticated, getUser, clearAuth } from '@/lib/auth';
-import api from '@/lib/api';
+import api, { API_URL } from '@/lib/api';
 import toast from 'react-hot-toast';
 
 interface Resume {
@@ -74,8 +74,20 @@ export default function SettingsPage() {
     try {
       const response = await api.get('/api/resume');
       setResumes(response.data);
-    } catch (error) {
-      console.error('Failed to fetch resumes');
+    } catch (error: any) {
+      console.error('Failed to fetch resumes', error);
+      if (error?.response?.status === 401) {
+        clearAuth();
+        router.replace('/login');
+        return;
+      }
+      if (error?.message === 'Network Error') {
+        toast.error(
+          `Cannot reach backend at ${API_URL}. Start the API server or set NEXT_PUBLIC_API_URL.`
+        );
+        return;
+      }
+      toast.error('Failed to load resumes');
     }
   };
 
@@ -426,7 +438,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="glass-card p-6 rounded-3xl border border-red-500/30">
-              <h2 className="text-2xl font-semibold mb-6 text-white text-red-400">Delete Account</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-red-400">Delete Account</h2>
               <p className="text-white/80 mb-4">
                 This will permanently delete your account and all associated data. This action cannot be undone.
               </p>
