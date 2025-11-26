@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import AIChat from '@/components/AIChat';
 import CrystalElements from '@/components/CrystalElements';
 import { isAuthenticated } from '@/lib/auth';
 import api from '@/lib/api';
@@ -57,9 +59,10 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="crystal-bg min-h-screen">
+    <div className="crystal-bg min-h-screen pb-32">
       <CrystalElements />
       <Navbar />
+      <AIChat />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <h1 className="text-4xl font-bold mb-8 text-white text-glow">Analytics Dashboard</h1>
 
@@ -158,6 +161,7 @@ export default function AnalyticsPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

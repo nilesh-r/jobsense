@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import session from 'express-session';
+import passport from 'passport';
 import authRoutes from './routes/auth';
 import resumeRoutes from './routes/resume';
 import jobRoutes from './routes/job';
 import analysisRoutes from './routes/analysis';
 import analyticsRoutes from './routes/analytics';
+import settingsRoutes from './routes/settings';
+import chatRoutes from './routes/chat';
 
 dotenv.config();
 
@@ -20,12 +24,36 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session for OAuth
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport serialization
+passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user: any, done: (err: any, id?: any) => void) => {
+  done(null, user);
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

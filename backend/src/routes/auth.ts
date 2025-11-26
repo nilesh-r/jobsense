@@ -2,9 +2,103 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// Configure Google OAuth Strategy
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          // Check if user exists
+          let user = await prisma.user.findUnique({
+            where: { email: profile.emails?.[0]?.value || '' },
+          });
+
+          if (!user) {
+            // Create new user
+            user = await prisma.user.create({
+              data: {
+                name: profile.displayName || profile.name?.givenName || 'User',
+                email: profile.emails?.[0]?.value || '',
+                passwordHash: '', // Google users don't need password
+                googleId: profile.id,
+              },
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true,
+              },
+            });
+          } else if (!user.googleId) {
+            // Link Google account to existing user
+            user = await prisma.user.update({
+              where: { id: user.id },
+              data: { googleId: profile.id },
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true,
+              },
+            });
+          }
+
+          return done(null, user);
+        } catch (error) {
+          return done(error, null);
+        }
+      }
+    )
+  );
+}
+
+// Google OAuth Routes
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  async (req, res) => {
+    try {
+      const user = req.user as any;
+      if (!user) {
+        return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+      }
+
+      // Generate JWT
+      const jwtSecret = process.env.JWT_SECRET || 'default-secret';
+      const token = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        jwtSecret,
+        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+      );
+
+      // Redirect to frontend with token
+      res.redirect(
+        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}`
+      );
+    } catch (error) {
+      console.error('Google callback error:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+    }
+  }
+);
 
 // Register
 router.post('/register', async (req, res) => {
@@ -70,13 +164,21 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email }
+    // Find user (exclude soft-deleted)
+    const user = await prisma.user.findFirst({
+      where: { 
+        email,
+        deletedAt: null
+      }
     });
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check if user has password (Google users might not)
+    if (!user.passwordHash) {
+      return res.status(401).json({ error: 'Please sign in with Google' });
     }
 
     // Verify password
@@ -124,12 +226,16 @@ router.get('/me', async (req, res) => {
     ) as { userId: string };
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { 
+        id: decoded.userId,
+        deletedAt: null // Exclude soft-deleted users
+      },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
+        preferences: true,
         createdAt: true
       }
     });
@@ -146,4 +252,3 @@ router.get('/me', async (req, res) => {
 });
 
 export default router;
-

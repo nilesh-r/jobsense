@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  passwordHash String @map("password_hash")
-  role      String   @default("user") // user, admin
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  googleId     String?  @unique @map("google_id")
+  role         String   @default("user") // user, admin
+  deletedAt    DateTime? @map("deleted_at") // Soft delete
+  preferences  Json?    @map("preferences") // User preferences
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   resumes   Resume[]
   jobs      Job[]
