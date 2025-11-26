@@ -76,7 +76,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
           return done(null, safeUser);
         } catch (error) {
-          return done(error, null);
+          // ⬇️ yahi change hai
+          return done(error as any);
         }
       }
     )
