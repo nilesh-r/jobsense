@@ -13,15 +13,21 @@ export const getToken = (): string | null => {
 export const getUser = (): User | null => {
   if (typeof window === 'undefined') return null;
   const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
+  try {
+    return userStr ? (JSON.parse(userStr) as User) : null;
+  } catch {
+    return null;
+  }
 };
 
 export const setAuth = (token: string, user: User) => {
+  if (typeof window === 'undefined') return;
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(user));
 };
 
 export const clearAuth = () => {
+  if (typeof window === 'undefined') return;
   localStorage.removeItem('token');
   localStorage.removeItem('user');
 };
@@ -29,4 +35,3 @@ export const clearAuth = () => {
 export const isAuthenticated = (): boolean => {
   return !!getToken();
 };
-

@@ -2,68 +2,66 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { setAuth, User } from "@/lib/auth";
 
-// Minimal User type, independent of your lib/auth
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-};
-
-// BACKEND URL – yahi chal raha hai
-const API_BASE = "https://jobsense.onrender.com";
+// Helper to decode JWT payload (no extra library)
+function parseJwt(token: string): any | null {
+  try {
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
 
 export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const run = async () => {
+    const run = () => {
       try {
-        // ✅ Only runs in browser, safe to use window
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         const error = url.searchParams.get("error");
 
-        // Google error or missing token → back to login
+        // Google se error ya token missing
         if (error || !token) {
           router.replace("/login");
           return;
         }
 
-        // Verify token with backend
-        const res = await fetch(`${API_BASE}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          console.error(
-            "GET /api/auth/me failed:",
-            res.status,
-            await res.text()
-          );
+        // JWT payload decode karo
+        const payload = parseJwt(token);
+        if (!payload || !payload.userId || !payload.email || !payload.role) {
+          console.error("Invalid JWT payload:", payload);
           router.replace("/login");
           return;
         }
 
-        const data = await res.json();
-        const apiUser = data.user;
-
         const user: User = {
-          id: apiUser.id,
-          name: apiUser.name,
-          email: apiUser.email,
-          role: apiUser.role,
+          id: payload.userId,
+          email: payload.email,
+          role: payload.role,
+          // Naam backend ne token me nahi dala, to yahan simple derive kar lete:
+          name:
+            payload.name ||
+            (typeof payload.email === "string"
+              ? payload.email.split("@")[0]
+              : "User"),
         };
 
-        // Save to localStorage directly
-        if (typeof window !== "undefined") {
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-        }
+        // Local auth set
+        setAuth(token, user);
 
+        // Dashboard pe le jao
         router.replace("/dashboard");
       } catch (err) {
         console.error("Auth callback error:", err);
@@ -80,4 +78,5 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
+
 

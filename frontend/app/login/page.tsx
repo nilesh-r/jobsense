@@ -9,6 +9,10 @@ import api from '@/lib/api';
 import { setAuth } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
+// 👇 BACKEND base URL – env ho to woh use karo, warna Render URL
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || 'https://jobsense.onrender.com';
+
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -22,12 +26,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // username/password login
       const response = await api.post('/api/auth/login', formData);
       setAuth(response.data.token, response.data.user);
       toast.success('Login successful!');
       router.push('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Login failed');
+      toast.error(error?.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -46,6 +51,8 @@ export default function LoginPage() {
           </h1>
           <p className="text-white/80">Sign in to your account</p>
         </div>
+
+        {/* Email/password login */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-white/90 mb-2">
@@ -55,7 +62,9 @@ export default function LoginPage() {
               type="email"
               required
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
               placeholder="your@email.com"
             />
@@ -68,7 +77,9 @@ export default function LoginPage() {
               type="password"
               required
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
               placeholder="••••••••"
             />
@@ -76,7 +87,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white/20 hover:bg-white/30 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 backdrop-blur-sm border border-white/20"
+            className="w-full bg-white/20 hover:bg白/30 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 backdrop-blur-sm border border-white/20"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
@@ -84,14 +95,14 @@ export default function LoginPage() {
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-white/20"></div>
+          <div className="flex-1 border-t border-white/20" />
           <span className="px-4 text-white/60 text-sm">OR</span>
-          <div className="flex-1 border-t border-white/20"></div>
+          <div className="flex-1 border-t border-white/20" />
         </div>
 
         {/* Google OAuth Button */}
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/google`}
+          href={`${API_BASE}/api/auth/google`}
           className="w-full glass-strong flex items-center justify-center space-x-3 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -116,7 +127,7 @@ export default function LoginPage() {
         </a>
 
         <p className="mt-6 text-center text-sm text-white/80">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-white font-semibold hover:underline">
             Sign up
           </Link>
