@@ -28,6 +28,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const run = () => {
       try {
+        if (typeof window === 'undefined') return;
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         const error = url.searchParams.get("error");
