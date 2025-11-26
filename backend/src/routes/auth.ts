@@ -45,13 +45,10 @@ router.post('/register', async (req, res) => {
 
     // Generate JWT
     const jwtSecret = process.env.JWT_SECRET || 'default-secret';
-    const signOptions: SignOptions = {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
-    };
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       jwtSecret,
-      signOptions
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
     );
 
     res.status(201).json({
@@ -91,13 +88,10 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT
     const jwtSecret = process.env.JWT_SECRET || 'default-secret';
-    const signOptions: SignOptions = {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
-    };
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       jwtSecret,
-      signOptions
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
     );
 
     res.json({
