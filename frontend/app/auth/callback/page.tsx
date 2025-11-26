@@ -6,10 +6,7 @@ import { setAuth, User } from "@/lib/auth";
 import toast from "react-hot-toast";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
-// Make this route fully dynamic (no prerender / static export)
-export const dynamic = "force-dynamic";
+  process.env.NEXT_PUBLIC_API_URL || "https://jobsense.onrender.com";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -17,7 +14,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const run = async () => {
       try {
-        // ✅ Read query params from window (client-only)
+        // ✅ Query params only on client
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         const error = url.searchParams.get("error");
@@ -65,11 +62,10 @@ export default function AuthCallbackPage() {
           role: apiUser.role,
         };
 
-        // 💾 Save token + user using your existing helper
         setAuth(token, user);
 
         toast.success("Login successful!");
-        router.push("/dashboard"); // ya jo bhi tera main page hai
+        router.push("/dashboard");
       } catch (err) {
         console.error("Auth callback error:", err);
         toast.error("Network error while authenticating");
@@ -89,4 +85,3 @@ export default function AuthCallbackPage() {
     </div>
   );
 }
-
