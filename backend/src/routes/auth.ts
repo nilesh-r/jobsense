@@ -8,6 +8,24 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
+const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
+  (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
+
+type JwtPayload = {
+  userId: string;
+  email: string;
+  role: string;
+};
+
+type SafeUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+};
+
 // Configure Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -15,48 +33,48 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+        callbackURL:
+          process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (accessToken, refreshToken, profile: any, done) => {
         try {
-          // Check if user exists
-          let user = await prisma.user.findUnique({
-            where: { email: profile.emails?.[0]?.value || '' },
+          const email = profile.emails?.[0]?.value || '';
+
+          // Full DB user
+          let dbUser = await prisma.user.findUnique({
+            where: { email },
           });
 
-          if (!user) {
-            // Create new user
-            user = await prisma.user.create({
+          if (!dbUser) {
+            // New user
+            dbUser = await prisma.user.create({
               data: {
-                name: profile.displayName || profile.name?.givenName || 'User',
-                email: profile.emails?.[0]?.value || '',
-                passwordHash: '', // Google users don't need password
+                name:
+                  profile.displayName ||
+                  profile.name?.givenName ||
+                  'User',
+                email,
+                passwordHash: null, // Google users don't need password
                 googleId: profile.id,
               },
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-              },
             });
-          } else if (!user.googleId) {
+          } else if (!dbUser.googleId) {
             // Link Google account to existing user
-            user = await prisma.user.update({
-              where: { id: user.id },
+            dbUser = await prisma.user.update({
+              where: { id: dbUser.id },
               data: { googleId: profile.id },
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                createdAt: true,
-              },
             });
           }
 
-          return done(null, user);
+          const safeUser: SafeUser = {
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email,
+            role: dbUser.role,
+            createdAt: dbUser.createdAt,
+          };
+
+          return done(null, safeUser);
         } catch (error) {
           return done(error, null);
         }
@@ -76,26 +94,35 @@ router.get(
   passport.authenticate('google', { session: false }),
   async (req, res) => {
     try {
-      const user = req.user as any;
+      const user = req.user as SafeUser | undefined;
+
       if (!user) {
-        return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+        return res.redirect(
+          `${
+            process.env.FRONTEND_URL || 'http://localhost:3000'
+          }/login?error=google_auth_failed`
+        );
       }
 
-      // Generate JWT
-      const jwtSecret = process.env.JWT_SECRET || 'default-secret';
       const token = jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
-        jwtSecret,
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
       );
 
       // Redirect to frontend with token
       res.redirect(
-        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}`
+        `${
+          process.env.FRONTEND_URL || 'http://localhost:3000'
+        }/auth/callback?token=${token}`
       );
     } catch (error) {
       console.error('Google callback error:', error);
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+      res.redirect(
+        `${
+          process.env.FRONTEND_URL || 'http://localhost:3000'
+        }/login?error=google_auth_failed`
+      );
     }
   }
 );
@@ -111,7 +138,7 @@ router.post('/register', async (req, res) => {
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingUser) {
@@ -126,28 +153,27 @@ router.post('/register', async (req, res) => {
       data: {
         name,
         email,
-        passwordHash
+        passwordHash,
       },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     // Generate JWT
-    const jwtSecret = process.env.JWT_SECRET || 'default-secret';
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
-      jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.status(201).json({
       user,
-      token
+      token,
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -161,15 +187,17 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res
+        .status(400)
+        .json({ error: 'Email and password are required' });
     }
 
     // Find user (exclude soft-deleted)
     const user = await prisma.user.findFirst({
-      where: { 
+      where: {
         email,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     if (!user) {
@@ -189,21 +217,23 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT
-    const jwtSecret = process.env.JWT_SECRET || 'default-secret';
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
-      jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as SignOptions
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
+    const safeUser: SafeUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+    };
+
     res.json({
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      },
-      token
+      user: safeUser,
+      token,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -220,15 +250,12 @@ router.get('/me', async (req, res) => {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET!
-    ) as { userId: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
 
-    const user = await prisma.user.findUnique({
-      where: { 
+    const user = await prisma.user.findFirst({
+      where: {
         id: decoded.userId,
-        deletedAt: null // Exclude soft-deleted users
+        deletedAt: null, // Exclude soft-deleted users
       },
       select: {
         id: true,
@@ -236,8 +263,8 @@ router.get('/me', async (req, res) => {
         email: true,
         role: true,
         preferences: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     if (!user) {
