@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { setAuth, User } from "@/lib/auth";
 
-// Helper to decode JWT payload (no extra library)
+
 function parseJwt(token: string): any | null {
   try {
     const base64Url = token.split(".")[1];
@@ -39,7 +39,7 @@ export default function AuthCallbackPage() {
           return;
         }
 
-        // JWT payload decode karo
+        
         const payload = parseJwt(token);
         if (!payload || !payload.userId || !payload.email || !payload.role) {
           console.error("Invalid JWT payload:", payload);
@@ -51,7 +51,7 @@ export default function AuthCallbackPage() {
           id: payload.userId,
           email: payload.email,
           role: payload.role,
-          // Naam backend ne token me nahi dala, to yahan simple derive kar lete:
+          
           name:
             payload.name ||
             (typeof payload.email === "string"
@@ -59,10 +59,10 @@ export default function AuthCallbackPage() {
               : "User"),
         };
 
-        // Local auth set
+        
         setAuth(token, user);
 
-        // Dashboard pe le jao
+      
         router.replace("/dashboard");
       } catch (err) {
         console.error("Auth callback error:", err);

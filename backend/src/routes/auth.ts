@@ -8,24 +8,44 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
+/* =======================
+   ENV & CONSTANTS
+======================= */
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
   (process.env.JWT_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
+
+const FRONTEND_URL = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is missing');
+}
+
+if (!FRONTEND_URL) {
+  throw new Error('FRONTEND_URL is missing');
+}
+
+/* =======================
+   HELPERS
+======================= */
 
 const normalizeEmail = (value?: string) =>
   value?.trim().toLowerCase() || '';
 
-const FRONTEND_URL =
-  (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
-
-const buildFrontendUrl = (path: string, query?: Record<string, string>) => {
+const buildFrontendUrl = (
+  path: string,
+  query?: Record<string, string>
+) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const url = new URL(`${FRONTEND_URL}${normalizedPath}`);
+
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
       url.searchParams.set(key, value);
     });
   }
+
   return url.toString();
 };
 
@@ -43,17 +63,23 @@ type SafeUser = {
   createdAt: Date;
 };
 
-// Configure Google OAuth Strategy
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+/* =======================
+   PASSPORT GOOGLE STRATEGY
+======================= */
+
+if (
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  process.env.GOOGLE_CALLBACK_URL
+) {
   passport.use(
     new GoogleStrategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL:
-          process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+        callbackURL: process.env.GOOGLE_CALLBACK_URL, // MUST be absolute URL
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (_accessToken, _refreshToken, profile, done) => {
         try {
           const email = normalizeEmail(profile.emails?.[0]?.value);
 
@@ -61,26 +87,19 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
             return done(new Error('Google profile missing email'));
           }
 
-          // Full DB user
-          let dbUser: PrismaUser | null = await prisma.user.findUnique({
-            where: { email },
-          });
+          let dbUser: PrismaUser | null =
+            await prisma.user.findUnique({ where: { email } });
 
           if (!dbUser) {
-            // Create new user (no select here!)
             dbUser = await prisma.user.create({
               data: {
-                name:
-                  profile.displayName ||
-                  profile.name?.givenName ||
-                  'User',
+                name: profile.displayName || 'User',
                 email,
-                passwordHash: null, // Google users don't need password
+                passwordHash: null,
                 googleId: profile.id,
               },
             });
           } else if (!dbUser.googleId) {
-            // Link Google account to existing user
             dbUser = await prisma.user.update({
               where: { id: dbUser.id },
               data: { googleId: profile.id },
@@ -96,76 +115,92 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           };
 
           return done(null, safeUser);
-        } catch (error) {
-          // null second argument types ke hisaab se allowed nahi, isliye sirf error
-          return done(error as any);
+        } catch (err) {
+          return done(err as any);
         }
       }
     )
   );
 }
 
-// Google OAuth Routes
+/* =======================
+   GOOGLE AUTH ROUTES
+======================= */
+
+// Start Google OAuth
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  })
 );
 
+// Google OAuth Callback
 router.get(
   '/google/callback',
-  passport.authenticate('google', { session: false }),
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: buildFrontendUrl('/login', {
+      error: 'google_auth_failed',
+    }),
+  }),
   async (req, res) => {
     try {
-      const user = req.user as SafeUser | undefined;
+      const user = req.user as SafeUser;
 
-      if (!user) {
-      return res.redirect(
-        buildFrontendUrl('/login', { error: 'google_auth_failed' })
-      );
-      }
-
-      // Generate JWT
       const token = jwt.sign(
-        { userId: user.id, email: user.email, role: user.role },
+        {
+          userId: user.id,
+          email: user.email,
+          role: user.role,
+        },
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
 
-      // Redirect to frontend with token
-      res.redirect(buildFrontendUrl('/auth/callback', { token }));
+      return res.redirect(
+        buildFrontendUrl('/auth/callback', { token })
+      );
     } catch (error) {
       console.error('Google callback error:', error);
-      res.redirect(
-        buildFrontendUrl('/login', { error: 'google_auth_failed' })
+      return res.redirect(
+        buildFrontendUrl('/login', {
+          error: 'google_auth_failed',
+        })
       );
     }
   }
 );
 
-// Register
+/* =======================
+   REGISTER
+======================= */
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
     const normalizedEmail = normalizeEmail(email);
     const trimmedName = (name || '').trim();
 
     if (!trimmedName || !normalizedEmail || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({
+        error: 'All fields are required',
+      });
     }
 
-    // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({
+        error: 'User already exists',
+      });
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         name: trimmedName,
@@ -181,36 +216,40 @@ router.post('/register', async (req, res) => {
       },
     });
 
-    // Generate JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    res.status(201).json({
-      user,
-      token,
-    });
+    return res.status(201).json({ user, token });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
   }
 });
 
-// Login
+/* =======================
+   LOGIN
+======================= */
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = normalizeEmail(email);
 
     if (!normalizedEmail || !password) {
-      return res
-        .status(400)
-        .json({ error: 'Email and password are required' });
+      return res.status(400).json({
+        error: 'Email and password are required',
+      });
     }
 
-    // Find user (exclude soft-deleted)
     const user = await prisma.user.findFirst({
       where: {
         email: normalizedEmail,
@@ -218,62 +257,74 @@ router.post('/login', async (req, res) => {
       },
     });
 
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user || !user.passwordHash) {
+      return res.status(401).json({
+        error: 'Invalid credentials',
+      });
     }
 
-    // Check if user has password (Google users might not)
-    if (!user.passwordHash) {
-      return res.status(401).json({ error: 'Please sign in with Google' });
-    }
-
-    // Verify password
-    const isValid = await bcrypt.compare(password, user.passwordHash);
+    const isValid = await bcrypt.compare(
+      password,
+      user.passwordHash
+    );
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({
+        error: 'Invalid credentials',
+      });
     }
 
-    // Generate JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    const safeUser: SafeUser = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-    };
-
-    res.json({
-      user: safeUser,
+    return res.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
       token,
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
   }
 });
 
-// Get current user
+/* =======================
+   CURRENT USER
+======================= */
+
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
+      return res.status(401).json({
+        error: 'No token provided',
+      });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(
+      token,
+      JWT_SECRET
+    ) as JwtPayload;
 
     const user = await prisma.user.findFirst({
       where: {
         id: decoded.userId,
-        deletedAt: null, // Exclude soft-deleted users
+        deletedAt: null,
       },
       select: {
         id: true,
@@ -286,13 +337,17 @@ router.get('/me', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({
+        error: 'User not found',
+      });
     }
 
-    res.json({ user });
+    return res.json({ user });
   } catch (error) {
     console.error('Get me error:', error);
-    res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({
+      error: 'Invalid token',
+    });
   }
 });
 
