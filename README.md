@@ -14,10 +14,11 @@ A full-stack web application that helps job seekers optimize their resumes by an
 - ✅ Analysis history and analytics dashboard
 
 ### Advanced Features
+### Advanced Features
 - 🔄 Semantic matching using embeddings
 - 🔄 Skill tags and profile building
 - 🔄 Advanced analytics with charts
-- 🔄 AI-powered suggestions using LLM
+- ✅ True AI Conversational Coach using Google Gemini `2.5-flash`
 
 ## 🏗️ Architecture
 
@@ -33,7 +34,7 @@ jobsense-ai/
 
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
 - **Backend**: Node.js, Express, Prisma ORM
-- **AI Service**: Python, FastAPI, sentence-transformers
+- **AI Service**: Python, FastAPI, `google-genai` (Gemini 2.5 Flash), sentence-transformers
 - **Database**: PostgreSQL
 - **Auth**: JWT tokens
 
@@ -52,8 +53,9 @@ jobsense-ai/
    ```
 
 2. **Set up environment variables:**
-   - Copy `.env.example` files in each directory
-   - Configure database connection and JWT secrets
+2. **Set up environment variables:**
+   - Copy `.env.example` to `.env` in all three directories (`/frontend`, `/backend`, `/ai-service`)
+   - Configure database connection, Google OAuth secrets, and your `GEMINI_API_KEY`
 
 3. **Set up database:**
    ```bash
@@ -85,8 +87,9 @@ jobsense-ai/
 - Database: Prisma schema and migrations
 
 ### AI Service (`/ai-service`)
-- Endpoints: `/extract-text`, `/compute-embeddings`, `/score-resume-vs-jd`
-- Models: Sentence transformers for embeddings
+### AI Service (`/ai-service`)
+- Endpoints: `/extract-text`, `/compute-embeddings`, `/score-resume-vs-jd`, `/chat`
+- Models: Gemini 2.5 Flash (`google-genai`) and Sentence transformers
 
 ## 🔐 Environment Variables
 
@@ -106,6 +109,7 @@ NEXT_PUBLIC_API_URL="http://localhost:3001"
 ### AI Service
 ```
 PORT=8000
+GEMINI_API_KEY="your_google_ai_studio_api_key_here"
 ```
 
 ## 📝 API Documentation
