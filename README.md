@@ -58,6 +58,7 @@ jobsense-ai/
 3. **Set up database:**
    ```bash
    cd backend
+   npx prisma generate
    npx prisma migrate dev
    ```
 
@@ -109,7 +110,7 @@ PORT=8000
 
 ## 📝 API Documentation
 
-See `/backend/README.md` for detailed API documentation.
+See the backend code directly or explore the endpoints under `/backend/src/routes`.
 
 ## 🧪 Testing
 

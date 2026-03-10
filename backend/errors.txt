@@ -1,0 +1,6 @@
+src/routes/analytics.ts(30,24): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/routes/analytics.ts(30,29): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/routes/analytics.ts(35,22): error TS7006: Parameter 'analysis' implicitly has an 'any' type.
+src/routes/analytics.ts(46,22): error TS7006: Parameter 'analysis' implicitly has an 'any' type.
+src/routes/analytics.ts(62,12): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/routes/auth.ts(4,24): error TS2305: Module '"@prisma/client"' has no exported member 'User'.
