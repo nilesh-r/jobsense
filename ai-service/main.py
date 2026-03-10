@@ -57,13 +57,13 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
             
         # Generate embeddings using lightweight Google Gemini API rather than heavy local PyTorch
         resume_response = client.models.embed_content(
-            model='text-embedding-004',
+            model='models/text-embedding-004',
             contents=request.resume_text,
         )
         resume_embedding = np.array(resume_response.embeddings[0].values)
         
         jd_response = client.models.embed_content(
-            model='text-embedding-004',
+            model='models/text-embedding-004',
             contents=request.job_description,
         )
         jd_embedding = np.array(jd_response.embeddings[0].values)
@@ -114,7 +114,7 @@ async def compute_embeddings(texts: List[str]):
              raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
              
         response = client.models.embed_content(
-            model='text-embedding-004',
+            model='models/text-embedding-004',
             contents=texts,
         )
         
