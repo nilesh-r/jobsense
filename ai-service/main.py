@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import List, Optional, Dict, Any
 import os
@@ -33,15 +32,8 @@ app.add_middleware(
 )
 
 # Load sentence transformer model (lazy loading)
-model = None
-
-def get_model():
-    global model
-    if model is None:
-        print("Loading sentence transformer model...")
-        model = SentenceTransformer('all-MiniLM-L6-v2')
-        print("Model loaded successfully")
-    return model
+# Removed local PyTorch model since it causes OOM on free Render instances.
+# We will use Gemini embeddings instead.
 
 class ResumeAnalysisRequest(BaseModel):
     resume_text: str
@@ -60,11 +52,21 @@ async def health_check():
 @app.post("/score-resume-vs-jd", response_model=ResumeAnalysisResponse)
 async def score_resume_vs_jd(request: ResumeAnalysisRequest):
     try:
-        model = get_model()
+        if not client:
+            raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
+            
+        # Generate embeddings using lightweight Google Gemini API rather than heavy local PyTorch
+        resume_response = client.models.embed_content(
+            model='text-embedding-004',
+            contents=request.resume_text,
+        )
+        resume_embedding = np.array(resume_response.embeddings[0].values)
         
-        # Generate embeddings
-        resume_embedding = model.encode(request.resume_text)
-        jd_embedding = model.encode(request.job_description)
+        jd_response = client.models.embed_content(
+            model='text-embedding-004',
+            contents=request.job_description,
+        )
+        jd_embedding = np.array(jd_response.embeddings[0].values)
         
         # Calculate cosine similarity
         similarity = float(np.dot(resume_embedding, jd_embedding) / 
@@ -108,10 +110,17 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
 @app.post("/compute-embeddings")
 async def compute_embeddings(texts: List[str]):
     try:
-        model = get_model()
-        embeddings = model.encode(texts)
+        if not client:
+             raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
+             
+        response = client.models.embed_content(
+            model='text-embedding-004',
+            contents=texts,
+        )
+        
+        embeddings = [emb.values for emb in response.embeddings]
         return {
-            "embeddings": embeddings.tolist(),
+            "embeddings": embeddings,
             "dimension": len(embeddings[0]) if len(embeddings) > 0 else 0
         }
     except Exception as e:
