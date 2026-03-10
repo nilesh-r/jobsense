@@ -5,8 +5,23 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import List, Optional, Dict, Any
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(title="JobSense AI Service", version="1.0.0")
+
+# Setup Gemini AI if key is available
+from google import genai
+from google.genai import types
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if GEMINI_API_KEY:
+    client = genai.Client(api_key=GEMINI_API_KEY)
+else:
+    client = None
+
 
 # CORS middleware
 app.add_middleware(
@@ -116,7 +131,44 @@ async def chat_with_ai(request: ChatRequest):
     try:
         message_lower = request.message.lower()
         
-        # Simple rule-based responses (can be enhanced with LLM)
+        # If Gemini is available, use it!
+        if client:
+            # Build conversation history for context
+            history = []
+            if request.conversation_history:
+                for msg in request.conversation_history:
+                    role = "user" if msg.get("role") == "user" else "model"
+                    history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg.get("content", ""))]))
+                    
+            chat_session = client.chats.create(
+                model='gemini-2.5-flash',
+                config=types.GenerateContentConfig(
+                    system_instruction=(
+                        "You are JobSense AI, an expert career coach and ATS optimization specialist. "
+                        "Your goal is to help users improve their resumes, prepare for interviews, "
+                        "and understand Applicant Tracking Systems (ATS). You are encouraging, "
+                        "constructive, and highly knowledgeable about modern tech hiring practices. "
+                        "Keep your responses concise, actionable, and formatted nicely in Markdown."
+                    )
+                ),
+                history=history
+            )
+            response = chat_session.send_message(request.message)
+            
+            # Since Gemini generates its own suggestions organically, we can just suggest a few dynamic followups
+            # Or use a generic list based on the context.
+            suggestions = [
+                "How do I quantify my achievements?",
+                "What's a good ATS score?",
+                "Show me my missing keywords"
+            ]
+            
+            return ChatResponse(
+                response=response.text,
+                suggestions=suggestions
+            )
+            
+        # Fallback to simple rule-based responses
         if any(word in message_lower for word in ['ats', 'score', 'scoring']):
             response = (
                 "Your ATS (Applicant Tracking System) score measures how well your resume matches a job description. "
