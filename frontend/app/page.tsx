@@ -35,7 +35,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div ref={containerRef} className="premium-bg animated-bg relative overflow-hidden selection:bg-indigo-500/30">
+    <div ref={containerRef} className="premium-bg animated-bg relative overflow-hidden selection:bg-primary/30">
       <div className="fixed top-6 right-6 z-50">
         <DarkModeToggle />
       </div>
@@ -47,10 +47,10 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary /75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
               AI Core v3.0 Powered
             </div>
@@ -96,7 +96,7 @@ export default function Home() {
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full animate-pulse" />
+            <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full animate-pulse" />
             <div className="relative premium-card p-2 overflow-hidden aspect-square flex items-center justify-center border-primary/30">
               <Image 
                 src="/images/hero_ai.png" 
