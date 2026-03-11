@@ -80,9 +80,9 @@ export default function AIChat() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 right-8 z-[1000] w-14 h-14 bg-indigo-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:bg-indigo-400 hover:scale-110 transition-all duration-300 group"
+        className="fixed bottom-8 right-8 z-[1000] w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 hover:scale-110 transition-all duration-300 group"
       >
-        <span className="absolute inset-0 rounded-full bg-indigo-500 animate-ping opacity-20 group-hover:hidden"></span>
+        <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20 group-hover:hidden"></span>
         <svg className="w-6 h-6 text-white group-hover:rotate-12 transition-transform relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
@@ -107,7 +107,7 @@ export default function AIChat() {
               {/* Header */}
               <div className="p-5 bg-surface/50 backdrop-blur-xl border-b border-premium flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
@@ -205,7 +205,7 @@ export default function AIChat() {
                   <button 
                     onClick={handleSend}
                     disabled={loading || !input.trim()}
-                    className="w-11 h-11 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-all shadow-lg shadow-indigo-500/20 shrink-0"
+                    className="w-11 h-11 bg-primary hover:opacity-90 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-all shadow-lg shadow-primary/20 shrink-0"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
