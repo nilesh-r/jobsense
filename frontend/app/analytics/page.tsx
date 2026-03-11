@@ -39,6 +39,7 @@ export default function AnalyticsPage() {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    fetchAnalytics();
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
