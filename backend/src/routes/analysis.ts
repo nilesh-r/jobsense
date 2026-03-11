@@ -58,9 +58,17 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
     }
 
     // Combine scores
-    const finalAtsScore = embeddingSimilarity
-      ? Math.round((basicScore.overallScore * 0.4) + (embeddingSimilarity * 100 * 0.6))
-      : basicScore.overallScore;
+    let finalAtsScore = basicScore.overallScore;
+    let keywordScore = basicScore.keywordScore;
+    let skillsScore = basicScore.skillsScore;
+    let experienceScore = basicScore.experienceScore;
+
+    if (detailedAnalysis) {
+      finalAtsScore = detailedAnalysis.overall_score !== undefined ? detailedAnalysis.overall_score : Math.round(embeddingSimilarity! * 100);
+      keywordScore = detailedAnalysis.keyword_score !== undefined ? detailedAnalysis.keyword_score : keywordScore;
+      skillsScore = detailedAnalysis.skills_score !== undefined ? detailedAnalysis.skills_score : skillsScore;
+      experienceScore = detailedAnalysis.experience_score !== undefined ? detailedAnalysis.experience_score : experienceScore;
+    }
 
     // Create analysis
     const analysis = await prisma.analysis.create({
@@ -69,9 +77,9 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
         resumeId,
         jobId,
         atsScore: finalAtsScore,
-        keywordMatchScore: basicScore.keywordScore,
-        skillsMatchScore: basicScore.skillsScore,
-        experienceMatchScore: basicScore.experienceScore,
+        keywordMatchScore: keywordScore,
+        skillsMatchScore: skillsScore,
+        experienceMatchScore: experienceScore,
         embeddingSimilarity,
         missingKeywords: basicScore.missingKeywords,
         partialMatchKeywords: basicScore.partialMatches,

@@ -80,12 +80,16 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         Job Description:
         {request.job_description}
         
-        Instructions:
-        1. matched_points: Identify specific achievements/experiences in the resume that align with the JD. Quote or rephrase them effectively.
-        2. missing_points: Identify critical JD requirements (skills, experience, or certifications) that are completely absent or insufficient in the resume.
-        3. action_plan: Provide 3-5 high-impact, actionable steps. Use the format: "Add/Modify '[Original Text]' to '[Optimized Text]' to emphasize [Skill/Impact]".
-        4. key_skills_found: List technical tools and hard skills matched.
-        5. key_skills_missing: List technical tools and hard skills missing.
+        Provide a detailed JSON response with these keys:
+        - overall_score: A number (0-100) representing the total match strength.
+        - keyword_score: A number (0-100) based on specific technical term matching.
+        - skills_score: A number (0-100) based on competency and tool alignment.
+        - experience_score: A number (0-100) based on industry experience and seniority match.
+        - matched_points: List of specific achievements/experiences in the resume that align with the JD. Quote or rephrase them effectively.
+        - missing_points: Identify critical JD requirements (skills, experience, or certifications) that are completely absent or insufficient in the resume.
+        - action_plan: Provide 3-5 high-impact, actionable steps. Use the format: "Add/Modify '[Original Text]' to '[Optimized Text]' to emphasize [Skill/Impact]".
+        - key_skills_found: List technical tools and hard skills matched.
+        - key_skills_missing: List technical tools and hard skills missing.
         
         Quality Requirements:
         - Be extremely specific. No generic advice.
@@ -93,7 +97,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         - Focus on quantifying impact (numbers, percentages).
         
         Return ONLY a JSON object with these keys: 
-        "matched_points", "missing_points", "action_plan", "key_skills_found", "key_skills_missing".
+        "overall_score", "keyword_score", "skills_score", "experience_score", "matched_points", "missing_points", "action_plan", "key_skills_found", "key_skills_missing".
         """
         
         analysis_response = client.models.generate_content(
@@ -109,7 +113,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         detailed_analysis = json.loads(analysis_response.text)
         
         return ResumeAnalysisResponse(
-            similarity=similarity,
+            similarity=float(detailed_analysis.get('overall_score', similarity * 100) / 100.0),
             suggestions=detailed_analysis.get('action_plan', []),
             matched_skills=detailed_analysis.get('key_skills_found', []),
             missing_skills=detailed_analysis.get('key_skills_missing', []),
