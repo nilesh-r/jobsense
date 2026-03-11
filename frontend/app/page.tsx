@@ -97,7 +97,7 @@ export default function Home() {
             className="relative"
           >
             <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full animate-pulse" />
-            <div className="relative premium-card p-2 overflow-hidden aspect-square flex items-center justify-center border-indigo-500/30">
+            <div className="relative premium-card p-2 overflow-hidden aspect-square flex items-center justify-center border-primary/30">
               <Image 
                 src="/images/hero_ai.png" 
                 alt="AI Neural Network" 

@@ -68,10 +68,14 @@ body {
 
 /* Typography & Effects */
 .text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+  background: linear-gradient(135deg, var(--foreground) 0%, var(--muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.dark .text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
 }
 
 .text-glow {
@@ -105,8 +109,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: var(--muted);
   border-radius: 10px;
+  opacity: 0.5;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -202,10 +215,14 @@ body {
 }
 
 .text-reveal {
-  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
+  background: linear-gradient(to bottom, var(--foreground) 30%, var(--muted));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.dark .text-reveal {
+  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
 }
 
 /* Animations */
@@ -216,8 +233,12 @@ body {
 }
 
 .animated-bg {
-  background: radial-gradient(circle at 50% 50%, #030712 0%, #020617 100%);
+  background: var(--background);
   position: relative;
+}
+
+.dark .animated-bg {
+  background: radial-gradient(circle at 50% 50%, #030712 0%, #020617 100%);
 }
 
 .animated-bg::before {
@@ -227,6 +248,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at center, var(--primary), transparent 50%);
+  opacity: 0.05;
   animation: mesh-gradient 20s ease infinite;
 }

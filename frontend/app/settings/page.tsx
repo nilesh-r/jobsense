@@ -218,7 +218,7 @@ export default function SettingsPage() {
     <div className="premium-bg min-h-screen pb-32">
       <Navbar />
       <div className="container mx-auto px-4 py-8 relative z-10">
-        <h1 className="text-4xl font-bold mb-8 text-white text-glow">Settings</h1>
+        <h1 className="text-4xl font-bold mb-8 text-foreground text-glow">Settings</h1>
 
         {/* Tabs */}
         <div className="flex space-x-2 mb-6 overflow-x-auto">
@@ -233,8 +233,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'glass-strong text-white'
-                  : 'glass text-white/60 hover:text-white'
+                  ? 'glass-strong text-foreground'
+                  : 'glass text-muted hover:text-foreground'
               }`}
             >
               {tab.label}
@@ -246,32 +246,32 @@ export default function SettingsPage() {
         {activeTab === 'account' && (
           <div className="space-y-6">
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-2xl font-semibold mb-6 text-white">Profile Info</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-foreground">Profile Info</h2>
               <form onSubmit={handleUpdateProfile} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">Name</label>
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">Name</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">Email</label>
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">Email</label>
                   <input
                     type="email"
                     value={formData.email}
                     disabled
-                    className="w-full px-4 py-3 glass rounded-xl text-white/60 cursor-not-allowed"
+                    className="w-full px-4 py-3 glass rounded-xl text-muted cursor-not-allowed border border-premium"
                   />
-                  <p className="text-xs text-white/60 mt-1">Email cannot be changed</p>
+                  <p className="text-xs text-muted mt-1">Email cannot be changed</p>
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                  className="w-full bg-primary hover:opacity-90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-primary/20"
                 >
                   {loading ? 'Updating...' : 'Update Profile'}
                 </button>
@@ -279,47 +279,47 @@ export default function SettingsPage() {
             </div>
 
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-2xl font-semibold mb-6 text-white">Change Password</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-foreground">Change Password</h2>
               <form onSubmit={handleChangePassword} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">Current Password</label>
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">Current Password</label>
                   <input
                     type="password"
                     value={formData.currentPassword}
                     onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
                     required
-                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                     placeholder="••••••••"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">New Password</label>
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">New Password</label>
                   <input
                     type="password"
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                     required
                     minLength={6}
-                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                     placeholder="••••••••"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">Confirm New Password</label>
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">Confirm New Password</label>
                   <input
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     required
                     minLength={6}
-                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                     placeholder="••••••••"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                  className="w-full bg-primary hover:opacity-90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-primary/20"
                 >
                   {loading ? 'Changing...' : 'Change Password'}
                 </button>
@@ -331,51 +331,51 @@ export default function SettingsPage() {
         {/* Resume & Profile Defaults */}
         {activeTab === 'resume' && (
           <div className="premium-card spotlight-card p-6 rounded-3xl">
-            <h2 className="text-2xl font-semibold mb-6 text-white">Resume & Profile Defaults</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-foreground">Resume & Profile Defaults</h2>
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Default Resume</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Default Resume</label>
                 <select
                   value={formData.defaultResumeId}
                   onChange={(e) => setFormData({ ...formData, defaultResumeId: e.target.value })}
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 >
-                  <option value="">Select a default resume</option>
+                  <option value="" className="text-gray-900">Select a default resume</option>
                   {resumes.map((resume) => (
-                    <option key={resume.id} value={resume.id} className="bg-gray-800">
+                    <option key={resume.id} value={resume.id} className="text-gray-900">
                       {resume.originalFileName}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Default Job Role</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Default Job Role</label>
                 <input
                   type="text"
                   value={formData.defaultJobRole}
                   onChange={(e) => setFormData({ ...formData, defaultJobRole: e.target.value })}
                   placeholder="e.g., Software Engineer, Product Manager"
-                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Experience Level</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Experience Level</label>
                 <select
                   value={formData.experienceLevel}
                   onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 >
-                  <option value="">Select experience level</option>
-                  <option value="entry" className="bg-gray-800">Entry Level (0-2 years)</option>
-                  <option value="mid" className="bg-gray-800">Mid Level (3-5 years)</option>
-                  <option value="senior" className="bg-gray-800">Senior Level (6-10 years)</option>
-                  <option value="executive" className="bg-gray-800">Executive (10+ years)</option>
+                  <option value="" className="text-gray-900">Select experience level</option>
+                  <option value="entry" className="text-gray-900">Entry Level (0-2 years)</option>
+                  <option value="mid" className="text-gray-900">Mid Level (3-5 years)</option>
+                  <option value="senior" className="text-gray-900">Senior Level (6-10 years)</option>
+                  <option value="executive" className="text-gray-900">Executive (10+ years)</option>
                 </select>
               </div>
               <button
                 onClick={handleSavePreferences}
                 disabled={loading}
-                className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
+                className="w-full bg-primary hover:opacity-90 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-primary/20"
               >
                 {loading ? 'Saving...' : 'Save Preferences'}
               </button>
@@ -386,41 +386,41 @@ export default function SettingsPage() {
         {/* AI & Analysis Preferences */}
         {activeTab === 'ai' && (
           <div className="premium-card spotlight-card p-6 rounded-3xl">
-            <h2 className="text-2xl font-semibold mb-6 text-white">AI & Analysis Preferences</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-foreground">AI & Analysis Preferences</h2>
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Analysis Detail Level</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Analysis Detail Level</label>
                 <select
                   value={formData.analysisDetailLevel}
                   onChange={(e) => setFormData({ ...formData, analysisDetailLevel: e.target.value })}
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 >
-                  <option value="basic" className="bg-gray-800">Basic (Quick overview)</option>
-                  <option value="standard" className="bg-gray-800">Standard (Recommended)</option>
-                  <option value="detailed" className="bg-gray-800">Detailed (Comprehensive analysis)</option>
+                  <option value="basic" className="text-gray-900">Basic (Quick overview)</option>
+                  <option value="standard" className="text-gray-900">Standard (Recommended)</option>
+                  <option value="detailed" className="text-gray-900">Detailed (Comprehensive analysis)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Language</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Language</label>
                 <select
                   value={formData.language}
                   onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 >
-                  <option value="english" className="bg-gray-800">English</option>
-                  <option value="hinglish" className="bg-gray-800">Hinglish</option>
+                  <option value="english" className="text-gray-900">English</option>
+                  <option value="hinglish" className="text-gray-900">Hinglish</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Tone (Optional)</label>
+                <label className="block text-sm font-medium mb-2 text-foreground/90">Tone (Optional)</label>
                 <input
                   type="text"
                   value={formData.tone}
                   onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
                   placeholder="e.g., Professional, Friendly, Casual"
-                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-premium"
                 />
-                <p className="text-xs text-white/60 mt-1">Customize the tone of AI suggestions</p>
+                <p className="text-xs text-muted mt-1">Customize the tone of AI suggestions</p>
               </div>
               <button
                 onClick={handleSavePreferences}
@@ -437,8 +437,8 @@ export default function SettingsPage() {
         {activeTab === 'privacy' && (
           <div className="space-y-6">
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-2xl font-semibold mb-6 text-white">Clear All Analyses</h2>
-              <p className="text-white/80 mb-4">
+              <h2 className="text-2xl font-semibold mb-6 text-foreground">Clear All Analyses</h2>
+              <p className="text-muted mb-4">
                 This will permanently delete all your analysis history. This action cannot be undone.
               </p>
               <button
@@ -452,20 +452,20 @@ export default function SettingsPage() {
 
             <div className="premium-card spotlight-card p-6 rounded-3xl border border-red-500/30">
               <h2 className="text-2xl font-semibold mb-6 text-red-400">Delete Account</h2>
-              <p className="text-white/80 mb-4">
+              <p className="text-muted mb-4">
                 This will permanently delete your account and all associated data. This action cannot be undone.
               </p>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-white/90">
-                    Type <span className="text-red-400">DELETE</span> to confirm
+                  <label className="block text-sm font-medium mb-2 text-foreground/90">
+                    Type <span className="text-red-400 font-bold">DELETE</span> to confirm
                   </label>
                   <input
                     type="text"
                     value={formData.confirmDelete}
                     onChange={(e) => setFormData({ ...formData, confirmDelete: e.target.value })}
                     placeholder="DELETE"
-                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                    className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all border border-premium"
                   />
                 </div>
                 <button
