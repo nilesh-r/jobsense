@@ -44,6 +44,7 @@ class ResumeAnalysisResponse(BaseModel):
     suggestions: List[str]
     matched_skills: List[str]
     missing_skills: List[str]
+    detailed_analysis: Optional[Dict[str, Any]] = None
 
 @app.get("/health")
 async def health_check():
@@ -56,49 +57,55 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
             raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
             
         # Generate embeddings using batch call to minimize network roundtrips
-        response = client.models.embed_content(
+        embed_response = client.models.embed_content(
             model='gemini-embedding-001',
             contents=[request.resume_text, request.job_description],
         )
         
-        resume_embedding = np.array(response.embeddings[0].values)
-        jd_embedding = np.array(response.embeddings[1].values)
+        resume_embedding = np.array(embed_response.embeddings[0].values)
+        jd_embedding = np.array(embed_response.embeddings[1].values)
         
         # Calculate cosine similarity
         similarity = float(np.dot(resume_embedding, jd_embedding) / 
                           (np.linalg.norm(resume_embedding) * np.linalg.norm(jd_embedding)))
         
-        # Simple keyword extraction for suggestions
-        resume_lower = request.resume_text.lower()
-        jd_lower = request.job_description.lower()
+        # Use Gemini for Deep Analysis
+        analysis_prompt = f"""
+        Analyze this resume against the job description.
         
-        # Extract potential skills from JD
-        common_skills = [
-            'python', 'javascript', 'typescript', 'react', 'node', 'express',
-            'sql', 'mongodb', 'postgresql', 'aws', 'docker', 'kubernetes',
-            'html', 'css', 'angular', 'vue', 'nextjs', 'graphql', 'rest', 'api',
-            'java', 'spring', 'django', 'flask', 'fastapi', 'git', 'ci/cd'
-        ]
+        Resume:
+        {request.resume_text}
         
-        matched_skills = [skill for skill in common_skills 
-                         if skill in jd_lower and skill in resume_lower]
-        missing_skills = [skill for skill in common_skills 
-                         if skill in jd_lower and skill not in resume_lower]
+        Job Description:
+        {request.job_description}
         
-        # Generate suggestions
-        suggestions = []
-        if similarity < 0.5:
-            suggestions.append("Your resume has low semantic similarity to the job description. Consider aligning your experience and skills more closely.")
-        if len(missing_skills) > 0:
-            suggestions.append(f"Consider adding these skills: {', '.join(missing_skills[:5])}")
-        if len(matched_skills) < 3:
-            suggestions.append("Try to highlight more relevant technical skills in your resume.")
+        Provide a detailed JSON response with these keys:
+        - matched_points: List of specific points/achievements in the resume that match the job description.
+        - missing_points: List of critical JD requirements missing from the resume.
+        - action_plan: List of specific, actionable steps to make the resume "ATS-strong" for this role.
+        - key_skills_found: List of technical skills found in both.
+        - key_skills_missing: List of technical skills missing in the resume but required by the JD.
+        
+        Return ONLY the JSON.
+        """
+        
+        analysis_response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            config=types.GenerateContentConfig(
+                response_mime_type='application/json',
+            ),
+            contents=analysis_prompt,
+        )
+        
+        import json
+        detailed_analysis = json.loads(analysis_response.text)
         
         return ResumeAnalysisResponse(
             similarity=similarity,
-            suggestions=suggestions,
-            matched_skills=matched_skills[:10],
-            missing_skills=missing_skills[:10]
+            suggestions=detailed_analysis.get('action_plan', []),
+            matched_skills=detailed_analysis.get('key_skills_found', []),
+            missing_skills=detailed_analysis.get('key_skills_missing', []),
+            detailed_analysis=detailed_analysis
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")

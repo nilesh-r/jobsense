@@ -43,7 +43,7 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
 
     // Call AI service for embeddings and advanced analysis
     let embeddingSimilarity = null;
-    let aiSuggestions = null;
+    let detailedAnalysis = null;
 
     try {
       const aiResponse = await axios.post(`${AI_SERVICE_URL}/score-resume-vs-jd`, {
@@ -52,14 +52,14 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
       });
 
       embeddingSimilarity = aiResponse.data.similarity;
-      aiSuggestions = aiResponse.data.suggestions;
+      detailedAnalysis = aiResponse.data.detailed_analysis;
     } catch (error) {
       console.warn('AI service unavailable, using basic scoring only');
     }
 
     // Combine scores
     const finalAtsScore = embeddingSimilarity
-      ? Math.round((basicScore.overallScore * 0.6) + (embeddingSimilarity * 100 * 0.4))
+      ? Math.round((basicScore.overallScore * 0.4) + (embeddingSimilarity * 100 * 0.6))
       : basicScore.overallScore;
 
     // Create analysis
@@ -75,7 +75,7 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
         embeddingSimilarity,
         missingKeywords: basicScore.missingKeywords,
         partialMatchKeywords: basicScore.partialMatches,
-        suggestions: aiSuggestions || basicScore.suggestions
+        suggestions: detailedAnalysis || basicScore.suggestions
       },
       include: {
         resume: true,

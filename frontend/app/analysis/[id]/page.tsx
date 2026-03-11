@@ -236,8 +236,54 @@ export default function AnalysisPage() {
           </div>
         )}
 
-        {/* Suggestions */}
-        {analysis.suggestions && analysis.suggestions.length > 0 && (
+        {/* Detailed AI Analysis Breakdown */}
+        {analysis.suggestions && !Array.isArray(analysis.suggestions) && (
+          <div className="space-y-6">
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
+                <span className="text-2xl">✅</span> Points of Match
+              </h2>
+              <ul className="space-y-3">
+                {(analysis.suggestions as any).matched_points?.map((item: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-3 text-slate-200 text-sm leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-2" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-rose-500/20 bg-rose-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
+                <span className="text-2xl">❌</span> Missing Critical Points
+              </h2>
+              <ul className="space-y-3">
+                {(analysis.suggestions as any).missing_points?.map((item: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-3 text-slate-200 text-sm leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-2" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-indigo-500/20 bg-indigo-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
+                <span className="text-2xl">🚀</span> AI Core Action Plan
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                {(analysis.suggestions as any).action_plan?.map((item: string, idx: number) => (
+                  <div key={idx} className="glass p-4 rounded-2xl text-slate-200 text-sm leading-relaxed border border-indigo-500/10">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Fallback for basic suggestions (Array format) */}
+        {analysis.suggestions && Array.isArray(analysis.suggestions) && analysis.suggestions.length > 0 && (
           <div className="premium-card spotlight-card p-6 rounded-3xl">
             <h2 className="text-xl font-semibold mb-6 text-white">Improvement Suggestions</h2>
             <ul className="space-y-4">
