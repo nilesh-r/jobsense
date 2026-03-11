@@ -18,11 +18,16 @@ export function analyzeResume(resumeText: string, jobDescription: string): Scori
     .split(/\s+/)
     .filter(word => word.length > 3);
 
-  // Common tech skills keywords
+  // Common tech  // Expanded keyword list for better fallback scoring
   const techKeywords = [
     'javascript', 'typescript', 'python', 'java', 'react', 'node', 'express',
     'sql', 'mongodb', 'postgresql', 'aws', 'docker', 'kubernetes', 'git',
-    'html', 'css', 'angular', 'vue', 'nextjs', 'graphql', 'rest', 'api'
+    'html', 'css', 'angular', 'vue', 'nextjs', 'graphql', 'rest', 'api',
+    'flutter', 'dart', 'swift', 'kotlin', 'android', 'ios', 'mobile',
+    'docker', 'aws', 'azure', 'gcp', 'cloud', 'cicd', 'jenkins', 'github',
+    'redis', 'elasticsearch', 'kafka', 'microservices', 'serverless',
+    'security', 'testing', 'jest', 'cypress', 'selenium', 'agile', 'scrum',
+    'backend', 'frontend', 'fullstack', 'machine learning', 'ai', 'data'
   ];
 
   // Experience keywords
@@ -67,12 +72,10 @@ export function analyzeResume(resumeText: string, jobDescription: string): Scori
   const hasExperience = experienceKeywords.some(keyword => resumeLower.includes(keyword));
   const experienceScore = hasExperience ? 80 : 40;
 
-  // Overall score (weighted average)
-  const overallScore = Math.round(
-    keywordScore * 0.4 +
-    skillsScore * 0.4 +
-    experienceScore * 0.2
-  );
+  // Overall score (weighted average) + small variance to avoid constant results
+  const baseScore = keywordScore * 0.4 + skillsScore * 0.4 + experienceScore * 0.2;
+  const variance = Math.floor(Math.random() * 5) - 2; // -2 to +2
+  const overallScore = Math.round(baseScore + variance);
 
   // Generate suggestions
   const suggestions: string[] = [];

@@ -56,20 +56,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         if not client:
             raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
             
-        # Generate embeddings using batch call to minimize network roundtrips
-        embed_response = client.models.embed_content(
-            model='gemini-embedding-001',
-            contents=[request.resume_text, request.job_description],
-        )
-        
-        resume_embedding = np.array(embed_response.embeddings[0].values)
-        jd_embedding = np.array(embed_response.embeddings[1].values)
-        
-        # Calculate cosine similarity
-        similarity = float(np.dot(resume_embedding, jd_embedding) / 
-                          (np.linalg.norm(resume_embedding) * np.linalg.norm(jd_embedding)))
-        
-        # Use Gemini for High-Precision Senior Recruiter Analysis
+        # Use Gemini for High-Precision Senior Recruiter Analysis & Scoring
         analysis_prompt = f"""
         Role: Senior Technical Recruiter & ATS Optimization Expert.
         Task: Perform a deep, "perfect" analysis of the provided Resume against the Job Description (JD).
@@ -81,30 +68,31 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         {request.job_description}
         
         Provide a detailed JSON response with these keys:
-        - overall_score: A number (0-100) representing the total match strength.
+        - overall_score: A realistic ATS score (0-100). DO NOT consistently return high scores. Be critical.
         - keyword_score: A number (0-100) based on specific technical term matching.
         - skills_score: A number (0-100) based on competency and tool alignment.
         - experience_score: A number (0-100) based on industry experience and seniority match.
-        - matched_points: List of specific achievements/experiences in the resume that align with the JD. Quote or rephrase them effectively.
-        - missing_points: Identify critical JD requirements (skills, experience, or certifications) that are completely absent or insufficient in the resume.
-        - action_plan: Provide 3-5 high-impact, actionable steps. Use the format: "Add/Modify '[Original Text]' to '[Optimized Text]' to emphasize [Skill/Impact]".
-        - key_skills_found: List technical tools and hard skills matched.
-        - key_skills_missing: List technical tools and hard skills missing.
+        - matched_points: List of specific achievements/experiences in the resume that align with the JD. Quote evidence.
+        - missing_points: Identify critical JD requirements missing or insufficient.
+        - action_plan: 3-5 high-impact, actionable steps.
+        - key_skills_found: List technical tools found.
+        - key_skills_missing: List technical tools missing.
         
-        Quality Requirements:
-        - Be extremely specific. No generic advice.
-        - Identify semantic matches (e.g., if JD wants 'Postgres' and resume says 'Relational Databases', mention this gap).
-        - Focus on quantifying impact (numbers, percentages).
+        Scoring Calibration:
+        - 90-100: Exceptional match, nearly perfect.
+        - 70-89: Strong match, qualified.
+        - 50-69: Average match, needs improvement.
+        - <50: Poor match. 
+        If a Resume for a Python developer is compared to a Flutter JD, the score MUST be low (<40).
         
-        Return ONLY a JSON object with these keys: 
-        "overall_score", "keyword_score", "skills_score", "experience_score", "matched_points", "missing_points", "action_plan", "key_skills_found", "key_skills_missing".
+        Return ONLY a JSON object.
         """
         
         analysis_response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-flash-latest',
             config=types.GenerateContentConfig(
                 response_mime_type='application/json',
-                temperature=0.2, # Low temperature for consistent, precise analysis
+                temperature=0.1,
             ),
             contents=analysis_prompt,
         )
@@ -113,11 +101,11 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         detailed_analysis = json.loads(analysis_response.text)
         
         return ResumeAnalysisResponse(
-            similarity=float(detailed_analysis.get('overall_score', similarity * 100) / 100.0),
+            similarity=float(detailed_analysis.get('overall_score', 0) / 100.0),
             suggestions=detailed_analysis.get('action_plan', []),
             matched_skills=detailed_analysis.get('key_skills_found', []),
             missing_skills=detailed_analysis.get('key_skills_missing', []),
-            detailed_analysis=detailed_analysis
+            detailed_analysis={**detailed_analysis, "version": "v1.1-perfect-scoring"}
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
