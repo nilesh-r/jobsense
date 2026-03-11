@@ -54,10 +54,10 @@ export default function Home() {
               </span>
               AI Core v3.0 Powered
             </div>
-            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter text-white leading-[0.9]">
-              JobSense <span className="text-indigo-500 text-glow">AI</span>
+            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter text-foreground leading-[0.9]">
+              JobSense <span className="text-primary text-glow">AI</span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 mb-12 font-medium leading-relaxed max-w-xl text-reveal">
+            <p className="text-xl md:text-2xl text-muted mb-12 font-medium leading-relaxed max-w-xl text-reveal">
               The professional edge for your career. AI-powered ATS scoring, 
               keyword gap analysis, and personalized resume optimization.
             </p>
@@ -74,13 +74,13 @@ export default function Home() {
                 <>
                   <Link
                     href="/login"
-                    className="btn-primary text-lg px-12 py-4 shadow-indigo-500/20 w-full sm:w-auto text-center"
+                    className="btn-primary text-lg px-12 py-4 shadow-primary/20 w-full sm:w-auto text-center"
                   >
                     Get Started
                   </Link>
                   <Link
                     href="/register"
-                    className="px-12 py-4 rounded-xl text-lg font-semibold border border-white/10 hover:bg-white/5 transition-all text-white w-full sm:w-auto text-center"
+                    className="px-12 py-4 rounded-xl text-lg font-semibold border border-premium hover:bg-foreground/5 transition-all text-foreground w-full sm:w-auto text-center"
                   >
                     Create Account
                   </Link>
@@ -135,13 +135,13 @@ export default function Home() {
               transition={{ delay: 0.1 * i, duration: 0.6 }}
               className="premium-card spotlight-card p-10 flex flex-col items-center text-center group"
             >
-              <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl mb-8 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl mb-8 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {feature.icon}
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">{feature.title}</h3>
+              <p className="text-muted leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
         </div>

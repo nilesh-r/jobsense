@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { getUser, clearAuth } from '@/lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import DarkModeToggle from './DarkModeToggle';
 
 export default function Navbar() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function Navbar() {
   if (!mounted) return null;
 
   return (
-    <nav className="border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50">
+    <nav className="border-b border-premium bg-background/50 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto px-6 h-18 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)] group-hover:scale-110 transition-transform">
@@ -53,7 +54,7 @@ export default function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-xl font-bold text-white tracking-tight">JobSense<span className="text-indigo-400">AI</span></span>
+          <span className="text-xl font-bold text-foreground tracking-tight">JobSense<span className="text-indigo-400">AI</span></span>
         </Link>
 
         {user ? (
@@ -65,8 +66,8 @@ export default function Navbar() {
                   href={link.href}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     pathname === link.href 
-                      ? 'text-white bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] border border-indigo-500/20' 
-                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+                      ? 'text-foreground bg-primary/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] border border-primary/20' 
+                      : 'text-muted hover:text-foreground hover:bg-foreground/5 border border-transparent'
                   }`}
                 >
                   {link.name}
@@ -74,16 +75,19 @@ export default function Navbar() {
               ))}
             </div>
 
-            <div className="h-6 w-px bg-white/10 mx-2" />
+            <div className="flex items-center gap-4">
+              <DarkModeToggle />
+              <div className="h-6 w-px bg-white/10" />
+            </div>
 
             <div className="relative">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-white/5 transition-colors group"
+                className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-foreground/5 transition-colors group"
               >
-                <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{user.name}</span>
-                <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center border border-white/10">
-                  <span className="text-xs font-bold text-indigo-400">{user.name.charAt(0).toUpperCase()}</span>
+                <span className="text-sm font-medium text-muted group-hover:text-foreground transition-colors">{user.name}</span>
+                <div className="w-8 h-8 bg-surface rounded-full flex items-center justify-center border border-premium">
+                  <span className="text-xs font-bold text-primary">{user.name.charAt(0).toUpperCase()}</span>
                 </div>
               </button>
 
@@ -139,7 +143,7 @@ export default function Navbar() {
         )}
 
         {/* Mobile Menu Button - simplified for now */}
-        <button className="md:hidden p-2 text-slate-400 hover:text-white">
+        <button className="md:hidden p-2 text-muted hover:text-foreground">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
