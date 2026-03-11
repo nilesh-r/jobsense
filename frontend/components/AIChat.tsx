@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -141,9 +142,13 @@ export default function AIChat() {
                     <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
                       msg.role === 'user' 
                         ? 'bg-indigo-600 text-white rounded-tr-none' 
-                        : 'bg-slate-800 border border-white/5 text-slate-200 rounded-tl-none'
+                        : 'bg-slate-800 border border-white/5 text-slate-200 rounded-tl-none prose prose-invert prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0'
                     }`}>
-                      {msg.content}
+                      {msg.role === 'user' ? (
+                        msg.content
+                      ) : (
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      )}
                     </div>
                   </div>
                 ))}
