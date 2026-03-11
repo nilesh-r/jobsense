@@ -5,7 +5,6 @@ import { useRouter, useParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AIChat from '@/components/AIChat';
-import CrystalElements from '@/components/CrystalElements';
 import { isAuthenticated } from '@/lib/auth';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -45,7 +44,21 @@ export default function AnalysisPage() {
       router.push('/login');
       return;
     }
-    fetchAnalysis();
+    const handleMouseMove = (e: MouseEvent) => {
+      const cards = document.getElementsByClassName('spotlight-card');
+      for (const card of cards as any) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, [params.id]);
 
   const fetchAnalysis = async () => {
@@ -62,7 +75,7 @@ export default function AnalysisPage() {
 
   if (loading) {
     return (
-      <div className="crystal-bg min-h-screen">
+      <div className="premium-bg min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-white">Loading...</div>
@@ -76,8 +89,7 @@ export default function AnalysisPage() {
   }
 
   return (
-    <div className="crystal-bg min-h-screen pb-32">
-      <CrystalElements />
+    <div className="premium-bg min-h-screen pb-32">
       <Navbar />
       <AIChat />
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -93,7 +105,7 @@ export default function AnalysisPage() {
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {/* Left: Resume & Job Info */}
           <div className="space-y-6">
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-xl font-semibold mb-4 text-white">Resume</h2>
               <p className="text-sm text-white/80 mb-3 font-medium">
                 {analysis.resume.originalFileName}
@@ -103,7 +115,7 @@ export default function AnalysisPage() {
               </div>
             </div>
 
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-xl font-semibold mb-4 text-white">Job Description</h2>
               <p className="font-medium mb-3 text-white">
                 {analysis.job.title} - {analysis.job.companyName}
@@ -117,7 +129,7 @@ export default function AnalysisPage() {
           {/* Right: Score & Analysis */}
           <div className="space-y-6">
             {/* Overall Score */}
-            <div className="glass-card p-8 rounded-3xl text-center">
+            <div className="premium-card spotlight-card p-8 rounded-3xl text-center">
               <h2 className="text-lg font-semibold mb-4 text-white">ATS Score</h2>
               <div className="text-7xl font-bold gradient-text mb-4">
                 {analysis.atsScore}%
@@ -131,7 +143,7 @@ export default function AnalysisPage() {
             </div>
 
             {/* Score Breakdown */}
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-xl font-semibold mb-6 text-white">Score Breakdown</h2>
               <div className="space-y-5">
                 <div>
@@ -193,7 +205,7 @@ export default function AnalysisPage() {
 
         {/* Missing Keywords */}
         {analysis.missingKeywords && analysis.missingKeywords.length > 0 && (
-          <div className="glass-card p-6 rounded-3xl mb-6">
+          <div className="premium-card spotlight-card p-6 rounded-3xl mb-6">
             <h2 className="text-xl font-semibold mb-4 text-white">Missing Keywords</h2>
             <div className="flex flex-wrap gap-3">
               {analysis.missingKeywords.map((keyword, idx) => (
@@ -210,7 +222,7 @@ export default function AnalysisPage() {
 
         {/* Partial Matches */}
         {analysis.partialMatchKeywords && analysis.partialMatchKeywords.length > 0 && (
-          <div className="glass-card p-6 rounded-3xl mb-6">
+          <div className="premium-card spotlight-card p-6 rounded-3xl mb-6">
             <h2 className="text-xl font-semibold mb-4 text-white">Partial Matches</h2>
             <div className="flex flex-wrap gap-3">
               {analysis.partialMatchKeywords.map((keyword, idx) => (
@@ -227,7 +239,7 @@ export default function AnalysisPage() {
 
         {/* Suggestions */}
         {analysis.suggestions && analysis.suggestions.length > 0 && (
-          <div className="glass-card p-6 rounded-3xl">
+          <div className="premium-card spotlight-card p-6 rounded-3xl">
             <h2 className="text-xl font-semibold mb-6 text-white">Improvement Suggestions</h2>
             <ul className="space-y-4">
               {analysis.suggestions.map((suggestion, idx) => (

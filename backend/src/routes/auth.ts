@@ -4,6 +4,8 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient, User as PrismaUser } from '@prisma/client';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { validateRequest } from '../middleware/validate';
+import { registerSchema, loginSchema } from '../schemas';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -176,18 +178,12 @@ router.get(
    REGISTER
 ======================= */
 
-router.post('/register', async (req, res) => {
+router.post('/register', validateRequest(registerSchema), async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const normalizedEmail = normalizeEmail(email);
     const trimmedName = (name || '').trim();
-
-    if (!trimmedName || !normalizedEmail || !password) {
-      return res.status(400).json({
-        error: 'All fields are required',
-      });
-    }
 
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail },
@@ -239,16 +235,10 @@ router.post('/register', async (req, res) => {
    LOGIN
 ======================= */
 
-router.post('/login', async (req, res) => {
+router.post('/login', validateRequest(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = normalizeEmail(email);
-
-    if (!normalizedEmail || !password) {
-      return res.status(400).json({
-        error: 'Email and password are required',
-      });
-    }
 
     const user = await prisma.user.findFirst({
       where: {

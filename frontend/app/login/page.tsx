@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import CrystalElements from '@/components/CrystalElements';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import api, { API_URL } from '@/lib/api';
 import { setAuth } from '@/lib/auth';
@@ -38,8 +37,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="crystal-bg min-h-screen flex items-center justify-center px-4">
-      <CrystalElements />
+    <div className="premium-bg min-h-screen flex items-center justify-center px-4">
       <div className="fixed top-4 right-4 z-50">
         <DarkModeToggle />
       </div>

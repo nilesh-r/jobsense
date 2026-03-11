@@ -2,22 +2,16 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { validateRequest } from '../middleware/validate';
+import { changePasswordSchema, updatePreferencesSchema } from '../schemas';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Change password
-router.post('/change-password', authenticate, async (req: AuthRequest, res) => {
+router.post('/change-password', authenticate, validateRequest(changePasswordSchema), async (req: AuthRequest, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Current password and new password are required' });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({ error: 'New password must be at least 6 characters' });
-    }
 
     // Get user with password
     const user = await prisma.user.findUnique({
@@ -86,7 +80,7 @@ router.put('/profile', authenticate, async (req: AuthRequest, res) => {
 });
 
 // Update preferences
-router.put('/preferences', authenticate, async (req: AuthRequest, res) => {
+router.put('/preferences', authenticate, validateRequest(updatePreferencesSchema), async (req: AuthRequest, res) => {
   try {
     const { defaultResumeId, defaultJobRole, experienceLevel, analysisDetailLevel, language, tone } = req.body;
 

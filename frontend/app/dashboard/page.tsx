@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AIChat from '@/components/AIChat';
-import CrystalElements from '@/components/CrystalElements';
 import { isAuthenticated } from '@/lib/auth';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -34,328 +35,376 @@ interface Analysis {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [resumes, setResumes] = useState<Resume[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [analyses, setAnalyses] = useState<Analysis[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'resume' | 'job' | 'analyze'>('resume');
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push('/login');
-      return;
+    } else {
+      setIsAuthChecking(false);
     }
-    fetchData();
-  }, []);
 
-  const fetchData = async () => {
-    try {
-      const [resumesRes, jobsRes, analysesRes] = await Promise.all([
-        api.get('/api/resume'),
-        api.get('/api/job'),
-        api.get('/api/analysis'),
-      ]);
-      setResumes(resumesRes.data);
-      setJobs(jobsRes.data);
-      setAnalyses(analysesRes.data);
-    } catch (error) {
-      toast.error('Failed to load data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('resume', file);
-
-    try {
-      await api.post('/api/resume', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success('Resume uploaded successfully!');
-      fetchData();
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Upload failed');
-    }
-  };
-
-  const handleCreateJob = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      title: formData.get('title') as string,
-      companyName: formData.get('companyName') as string,
-      jdText: formData.get('jdText') as string,
+    const handleMouseMove = (e: MouseEvent) => {
+      const cards = document.getElementsByClassName('spotlight-card');
+      for (const card of cards as any) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      }
     };
 
-    try {
-      await api.post('/api/job', data);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [router]);
+
+  // Queries
+  const { data: resumes = [], isLoading: resumesLoading } = useQuery<Resume[]>({
+    queryKey: ['resumes'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/resume');
+      return data;
+    },
+    enabled: !isAuthChecking,
+  });
+
+  const { data: jobs = [], isLoading: jobsLoading } = useQuery<Job[]>({
+    queryKey: ['jobs'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/job');
+      return data;
+    },
+    enabled: !isAuthChecking,
+  });
+
+  const { data: analyses = [], isLoading: analysesLoading } = useQuery<Analysis[]>({
+    queryKey: ['analyses'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/analysis');
+      return data;
+    },
+    enabled: !isAuthChecking,
+  });
+
+  // Mutations
+  const uploadResumeMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('resume', file);
+      const { data } = await api.post('/api/resume', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Resume uploaded successfully!');
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
+    },
+    onError: (error: any) => toast.error(error.response?.data?.error || 'Upload failed'),
+  });
+
+  const createJobMutation = useMutation({
+    mutationFn: async (data: { title: string; companyName: string; jdText: string }) => {
+      const response = await api.post('/api/job', data);
+      return response.data;
+    },
+    onSuccess: () => {
       toast.success('Job description saved!');
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setActiveTab('analyze');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to save job');
-    }
-  };
+    },
+    onError: (error: any) => toast.error(error.response?.data?.error || 'Failed to save job'),
+  });
 
-  const handleAnalyze = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const resumeId = formData.get('resumeId') as string;
-    const jobId = formData.get('jobId') as string;
-
-    if (!resumeId || !jobId) {
-      toast.error('Please select both resume and job description');
-      return;
-    }
-
-    try {
-      const response = await api.post('/api/analysis', { resumeId, jobId });
+  const analyzeMutation = useMutation({
+    mutationFn: async (data: { resumeId: string; jobId: string }) => {
+      const response = await api.post('/api/analysis', data);
+      return response.data;
+    },
+    onSuccess: (data) => {
       toast.success('Analysis complete!');
-      router.push(`/analysis/${response.data.id}`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Analysis failed');
-    }
-  };
+      router.push(`/analysis/${data.id}`);
+    },
+    onError: (error: any) => toast.error(error.response?.data?.error || 'Analysis failed'),
+  });
 
-  if (loading) {
-    return (
-      <div className="crystal-bg min-h-screen">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-white">Loading...</div>
-        </div>
-      </div>
-    );
-  }
+  if (isAuthChecking) return null;
 
   return (
-    <div className="crystal-bg min-h-screen pb-32">
-      <CrystalElements />
+    <div className="premium-bg min-h-screen">
       <Navbar />
       <AIChat />
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <h1 className="text-4xl font-bold mb-8 text-white text-glow">Dashboard</h1>
-
-        {/* Tabs */}
-        <div className="flex space-x-4 mb-8 glass-strong p-2 rounded-2xl backdrop-blur-xl">
-          <button
-            onClick={() => setActiveTab('resume')}
-            className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all ${
-              activeTab === 'resume'
-                ? 'bg-white/30 text-white shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
+      
+      <main className="container mx-auto px-6 py-12">
+        <header className="mb-12">
+          <motion.h1 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-4xl font-bold text-white tracking-tight"
           >
-            Upload Resume
-          </button>
-          <button
-            onClick={() => setActiveTab('job')}
-            className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all ${
-              activeTab === 'job'
-                ? 'bg-white/30 text-white shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            Add Job Description
-          </button>
-          <button
-            onClick={() => setActiveTab('analyze')}
-            className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all ${
-              activeTab === 'analyze'
-                ? 'bg-white/30 text-white shadow-lg'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            Analyze
-          </button>
-        </div>
+            Dashboard
+          </motion.h1>
+          <p className="text-slate-400 mt-2">Manage your career assets and launch deep scans.</p>
+        </header>
 
-        {/* Resume Upload Tab */}
-        {activeTab === 'resume' && (
-          <div className="glass-card p-8 rounded-3xl mb-6">
-            <h2 className="text-2xl font-bold mb-6 text-white">Upload Resume</h2>
-            <div className="mb-6">
-              <label className="block mb-4 text-white/90 font-medium">Choose File (PDF or DOCX)</label>
-              <div className="glass p-8 rounded-2xl border-2 border-dashed border-white/30 text-center hover:border-white/50 transition-all cursor-pointer">
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={handleResumeUpload}
-                  className="hidden"
-                  id="resume-upload"
-                />
-                <label htmlFor="resume-upload" className="cursor-pointer">
-                  <svg className="w-16 h-16 mx-auto mb-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p className="text-white/80">Click to upload or drag and drop</p>
-                  <p className="text-sm text-white/60 mt-2">PDF, DOCX (MAX. 10MB)</p>
-                </label>
-              </div>
-            </div>
-            <div className="mt-6">
-              <h3 className="font-semibold mb-4 text-white text-lg">Your Resumes</h3>
-              {resumes.length === 0 ? (
-                <p className="text-white/60 glass p-4 rounded-xl text-center">No resumes uploaded yet</p>
-              ) : (
-                <div className="space-y-3">
-                  {resumes.map((resume) => (
-                    <div key={resume.id} className="glass p-4 rounded-xl flex justify-between items-center hover:bg-white/10 transition-all">
-                      <span className="text-white font-medium">{resume.originalFileName}</span>
-                      <span className="text-sm text-white/60">
-                        {new Date(resume.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Job Description Tab */}
-        {activeTab === 'job' && (
-          <div className="glass-card p-8 rounded-3xl mb-6">
-            <h2 className="text-2xl font-bold mb-6 text-white">Add Job Description</h2>
-            <form onSubmit={handleCreateJob} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Job Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  required
-                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-                  placeholder="e.g., Senior Software Engineer"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Company Name</label>
-                <input
-                  type="text"
-                  name="companyName"
-                  required
-                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-                  placeholder="e.g., Google"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Job Description</label>
-                <textarea
-                  name="jdText"
-                  required
-                  rows={10}
-                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none"
-                  placeholder="Paste the full job description here..."
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-white/20 hover:bg-white/30 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-white/20"
-              >
-                Save Job Description
-              </button>
-            </form>
-            <div className="mt-8">
-              <h3 className="font-semibold mb-4 text-white text-lg">Saved Jobs</h3>
-              {jobs.length === 0 ? (
-                <p className="text-white/60 glass p-4 rounded-xl text-center">No job descriptions saved yet</p>
-              ) : (
-                <div className="space-y-3">
-                  {jobs.map((job) => (
-                    <div key={job.id} className="glass p-4 rounded-xl hover:bg-white/10 transition-all">
-                      <span className="font-medium text-white">{job.title}</span>
-                      <span className="text-white/80"> at </span>
-                      <span className="font-medium text-white">{job.companyName}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Analyze Tab */}
-        {activeTab === 'analyze' && (
-          <div className="glass-card p-8 rounded-3xl mb-6">
-            <h2 className="text-2xl font-bold mb-6 text-white">Analyze Resume vs Job</h2>
-            <form onSubmit={handleAnalyze} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Select Resume</label>
-                <select
-                  name="resumeId"
-                  required
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main Action Area - 8 columns */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Tabs Header */}
+            <div className="flex p-1 bg-slate-900/50 rounded-2xl border border-white/5 w-fit">
+              {['resume', 'job', 'analyze'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as any)}
+                  className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all relative ${
+                    activeTab === tab ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
                 >
-                  <option value="" className="bg-gray-800">Choose a resume...</option>
-                  {resumes.map((resume) => (
-                    <option key={resume.id} value={resume.id} className="bg-gray-800">
-                      {resume.originalFileName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white/90">Select Job Description</label>
-                <select
-                  name="jobId"
-                  required
-                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-                >
-                  <option value="" className="bg-gray-800">Choose a job...</option>
-                  {jobs.map((job) => (
-                    <option key={job.id} value={job.id} className="bg-gray-800">
-                      {job.title} - {job.companyName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm border border-white/20 text-lg"
-              >
-                🚀 Analyze Now
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* Recent Analyses */}
-        <div className="glass-card p-8 rounded-3xl">
-          <h2 className="text-2xl font-bold mb-6 text-white">Recent Analyses</h2>
-          {analyses.length === 0 ? (
-            <p className="text-white/60 glass p-6 rounded-xl text-center">No analyses yet. Create one to get started!</p>
-          ) : (
-            <div className="space-y-4">
-              {analyses.slice(0, 5).map((analysis) => (
-                <Link
-                  key={analysis.id}
-                  href={`/analysis/${analysis.id}`}
-                  className="block glass p-6 rounded-2xl hover:bg-white/15 transition-all group"
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold text-white text-lg group-hover:text-white/90">
-                        {analysis.job.title} - {analysis.job.companyName}
-                      </p>
-                      <p className="text-sm text-white/60 mt-1">
-                        {new Date(analysis.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="text-4xl font-bold gradient-text">
-                      {analysis.atsScore}%
-                    </div>
-                  </div>
-                </Link>
+                  {activeTab === tab && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-indigo-500 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.3)]"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="relative z-10 capitalize">
+                    {tab === 'job' ? 'Description' : tab}
+                  </span>
+                </button>
               ))}
             </div>
-          )}
+
+            {/* Tab content wrapper */}
+            <div className="relative">
+              <AnimatePresence mode="wait">
+                {activeTab === 'resume' && (
+                  <motion.div
+                    key="resume"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="premium-card spotlight-card p-8"
+                  >
+                    <h2 className="text-xl font-bold text-white mb-6">Upload Resume</h2>
+                    <label 
+                      htmlFor="resume-upload" 
+                      className={`group block p-12 rounded-2xl border-2 border-dashed transition-all cursor-pointer text-center
+                        ${uploadResumeMutation.isPending ? 'border-indigo-500 bg-indigo-500/5' : 'border-white/10 hover:border-indigo-500/50 hover:bg-white/5'}
+                      `}
+                    >
+                      <input
+                        type="file"
+                        accept=".pdf,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadResumeMutation.mutate(file);
+                        }}
+                        className="hidden"
+                        id="resume-upload"
+                      />
+                      {uploadResumeMutation.isPending ? (
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4" />
+                          <p className="text-white font-medium">Processing...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-16 h-16 mx-auto mb-4 bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                          </div>
+                          <p className="text-white font-semibold">Drop your resume here</p>
+                          <p className="text-slate-400 text-sm mt-1">PDF or DOCX preferred (Max 10MB)</p>
+                        </>
+                      )}
+                    </label>
+
+                    <div className="mt-10">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Your Recent Files</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {resumesLoading ? (
+                           [1, 2].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />)
+                        ) : resumes.length === 0 ? (
+                           <p className="text-slate-500 text-sm italic">No files uploaded yet.</p>
+                        ) : resumes.map(r => (
+                          <div key={r.id} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <svg className="w-5 h-5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span className="text-white text-sm font-medium truncate">{r.originalFileName}</span>
+                            </div>
+                            <span className="text-xs text-slate-500">{new Date(r.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'job' && (
+                  <motion.div
+                    key="job"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="premium-card spotlight-card p-8"
+                  >
+                    <h2 className="text-xl font-bold text-white mb-6">Target Profiling</h2>
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      const fd = new FormData(e.currentTarget);
+                      createJobMutation.mutate({
+                        title: fd.get('title') as string,
+                        companyName: fd.get('companyName') as string,
+                        jdText: fd.get('jdText') as string,
+                      });
+                    }} className="space-y-6">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-slate-500 uppercase ml-1">Job Title</label>
+                          <input name="title" required placeholder="e.g. Lead Designer" className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold text-slate-500 uppercase ml-1">Company</label>
+                          <input name="companyName" required placeholder="e.g. OpenAI" className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase ml-1">Job Description</label>
+                        <textarea name="jdText" required rows={6} placeholder="Paste requirements..." className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors resize-none" />
+                      </div>
+                      <button 
+                        type="submit" 
+                        disabled={createJobMutation.isPending}
+                        className="btn-primary w-full md:w-auto"
+                      >
+                        {createJobMutation.isPending ? 'Saving...' : 'Save Profile'}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+
+                {activeTab === 'analyze' && (
+                  <motion.div
+                    key="analyze"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="premium-card spotlight-card p-8"
+                  >
+                    <div className="flex justify-between items-center mb-8">
+                      <h2 className="text-xl font-bold text-white">Compare & Analyze</h2>
+                      <div className="px-3 py-1 bg-indigo-500/10 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">AI Core v2.0</div>
+                    </div>
+
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      const fd = new FormData(e.currentTarget);
+                      analyzeMutation.mutate({
+                        resumeId: fd.get('resumeId') as string,
+                        jobId: fd.get('jobId') as string,
+                      });
+                    }} className="space-y-8">
+                      <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                          <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Primary Source</div>
+                          <select name="resumeId" required className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none appearance-none cursor-pointer shadow-xl transition-all">
+                            <option value="">-- Choose Resume --</option>
+                            {resumes.map(r => <option key={r.id} value={r.id}>{r.originalFileName}</option>)}
+                          </select>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Target Context</div>
+                          <select name="jobId" required className="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none appearance-none cursor-pointer shadow-xl transition-all">
+                            <option value="">-- Choose Job --</option>
+                            {jobs.map(j => <option key={j.id} value={j.id}>{j.title} at {j.companyName}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      <button 
+                        type="submit" 
+                        disabled={analyzeMutation.isPending}
+                        className="btn-primary w-full text-lg py-5 shadow-2xl shadow-indigo-500/20 flex items-center justify-center gap-3 group"
+                      >
+                        {analyzeMutation.isPending ? (
+                          <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <span className="group-hover:translate-x-1 transition-transform">🚀</span>
+                            Initialize Advanced Scan
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Sidebar - 4 columns (Bento Style) */}
+          <div className="lg:col-span-4 space-y-8">
+            <div className="premium-card spotlight-card p-6">
+              <h3 className="text-lg font-bold text-white mb-6">Recent Scans</h3>
+              {analysesLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse" />)}
+                </div>
+              ) : analyses.length === 0 ? (
+                <div className="text-center py-10 px-4">
+                  <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <p className="text-slate-500 text-sm">No analysis history found.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {analyses.slice(0, 5).map((a) => (
+                    <Link
+                      key={a.id}
+                      href={`/analysis/${a.id}`}
+                      className="block p-4 rounded-2xl bg-slate-900 border border-white/5 hover:border-indigo-500/30 hover:scale-[1.02] transition-all group"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex-1 min-w-0 pr-4">
+                          <p className="text-white font-bold truncate group-hover:text-indigo-400 transition-colors">{a.job.title}</p>
+                          <p className="text-slate-500 text-xs mt-1 truncate">{a.job.companyName}</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className={`text-xl font-black ${a.atsScore > 75 ? 'text-emerald-400' : a.atsScore > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                            {a.atsScore}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                  {analyses.length > 5 && (
+                    <Link href="/analytics" className="block text-center text-sm font-bold text-indigo-400 hover:text-indigo-300 py-2 transition-colors">
+                      View All Reports →
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="premium-card spotlight-card p-6 bg-indigo-600/10 border-indigo-500/20 relative overflow-hidden group">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+              <h3 className="text-white font-bold mb-2">Pro Optimization</h3>
+              <p className="text-indigo-200/70 text-sm leading-relaxed mb-6">Unlock deep keyword mapping and real-time resume re-writing with Pro.</p>
+              <button className="w-full py-2.5 bg-indigo-500 text-white text-xs font-black uppercase tracking-widest rounded-lg hover:bg-indigo-400 transition-colors">Upgrade Now</button>
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+
       <Footer />
     </div>
   );

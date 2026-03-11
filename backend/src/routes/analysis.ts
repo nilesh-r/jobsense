@@ -1,6 +1,8 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { validateRequest } from '../middleware/validate';
+import { analyzeResumeSchema } from '../schemas';
 import { analyzeResume } from '../services/atsScoring';
 import axios from 'axios';
 
@@ -9,13 +11,9 @@ const prisma = new PrismaClient();
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
 // Create analysis
-router.post('/', authenticate, async (req: AuthRequest, res) => {
+router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req: AuthRequest, res) => {
   try {
     const { resumeId, jobId } = req.body;
-
-    if (!resumeId || !jobId) {
-      return res.status(400).json({ error: 'Resume ID and Job ID are required' });
-    }
 
     // Fetch resume and job
     const resume = await prisma.resume.findFirst({

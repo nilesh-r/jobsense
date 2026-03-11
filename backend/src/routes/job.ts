@@ -1,18 +1,16 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { validateRequest } from '../middleware/validate';
+import { createJobSchema } from '../schemas';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Create job description
-router.post('/', authenticate, async (req: AuthRequest, res) => {
+router.post('/', authenticate, validateRequest(createJobSchema), async (req: AuthRequest, res) => {
   try {
     const { title, companyName, jdText } = req.body;
-
-    if (!title || !companyName || !jdText) {
-      return res.status(400).json({ error: 'Title, company name, and job description are required' });
-    }
 
     const job = await prisma.job.create({
       data: {

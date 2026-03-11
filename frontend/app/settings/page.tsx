@@ -47,6 +47,21 @@ export default function SettingsPage() {
     }
     fetchUser();
     fetchResumes();
+    const handleMouseMove = (e: MouseEvent) => {
+      const cards = document.getElementsByClassName('spotlight-card');
+      for (const card of cards as any) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const fetchUser = async () => {
@@ -201,7 +216,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="crystal-bg min-h-screen pb-32">
+    <div className="premium-bg min-h-screen pb-32">
       <Navbar />
       <AIChat />
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -232,7 +247,7 @@ export default function SettingsPage() {
         {/* Account & Security */}
         {activeTab === 'account' && (
           <div className="space-y-6">
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-2xl font-semibold mb-6 text-white">Profile Info</h2>
               <form onSubmit={handleUpdateProfile} className="space-y-5">
                 <div>
@@ -265,7 +280,7 @@ export default function SettingsPage() {
               </form>
             </div>
 
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-2xl font-semibold mb-6 text-white">Change Password</h2>
               <form onSubmit={handleChangePassword} className="space-y-5">
                 <div>
@@ -317,7 +332,7 @@ export default function SettingsPage() {
 
         {/* Resume & Profile Defaults */}
         {activeTab === 'resume' && (
-          <div className="glass-card p-6 rounded-3xl">
+          <div className="premium-card spotlight-card p-6 rounded-3xl">
             <h2 className="text-2xl font-semibold mb-6 text-white">Resume & Profile Defaults</h2>
             <div className="space-y-5">
               <div>
@@ -372,7 +387,7 @@ export default function SettingsPage() {
 
         {/* AI & Analysis Preferences */}
         {activeTab === 'ai' && (
-          <div className="glass-card p-6 rounded-3xl">
+          <div className="premium-card spotlight-card p-6 rounded-3xl">
             <h2 className="text-2xl font-semibold mb-6 text-white">AI & Analysis Preferences</h2>
             <div className="space-y-5">
               <div>
@@ -423,7 +438,7 @@ export default function SettingsPage() {
         {/* Data & Privacy */}
         {activeTab === 'privacy' && (
           <div className="space-y-6">
-            <div className="glass-card p-6 rounded-3xl">
+            <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-2xl font-semibold mb-6 text-white">Clear All Analyses</h2>
               <p className="text-white/80 mb-4">
                 This will permanently delete all your analysis history. This action cannot be undone.
@@ -437,7 +452,7 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <div className="glass-card p-6 rounded-3xl border border-red-500/30">
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-red-500/30">
               <h2 className="text-2xl font-semibold mb-6 text-red-400">Delete Account</h2>
               <p className="text-white/80 mb-4">
                 This will permanently delete your account and all associated data. This action cannot be undone.
