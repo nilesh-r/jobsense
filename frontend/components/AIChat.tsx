@@ -23,13 +23,22 @@ export default function AIChat() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
+    setIsAuthenticated(!!localStorage.getItem('token'));
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Ensure the component only renders when the user is authenticated.
+  if (!isAuthenticated) return null;
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
