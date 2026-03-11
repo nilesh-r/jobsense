@@ -89,7 +89,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         """
         
         analysis_response = client.models.generate_content(
-            model='gemini-flash-latest',
+            model='gemini-2.0-flash',
             config=types.GenerateContentConfig(
                 response_mime_type='application/json',
                 temperature=0.1,
@@ -153,7 +153,7 @@ async def chat_with_ai(request: ChatRequest):
                     history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg.get("content", ""))]))
                     
             chat_session = client.chats.create(
-                model='gemini-2.5-flash',
+                model='gemini-2.0-flash',
                 config=types.GenerateContentConfig(
                     system_instruction=(
                         "You are JobSense AI, an expert career coach and ATS optimization specialist. "

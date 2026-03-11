@@ -5,21 +5,19 @@ import os
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-models_to_test = [
-    'text-embedding-004',
-    'models/text-embedding-004',
-    'embedding-001',
-    'models/embedding-001'
-]
-
-for model in models_to_test:
-    try:
-        print(f"Testing model: {model}")
-        response = client.models.embed_content(
-            model=model,
-            contents="test text"
-        )
-        print(f"SUCCESS: {model}")
-        break  # We want to see all or break? Let's NOT break, see all that work!
-    except Exception as e:
-        print(f"FAILED: {model} - {str(e)[:100]}")
+try:
+    print("Testing Embedding Model: gemini-embedding-001")
+    emb_resp = client.models.embed_content(
+        model='gemini-embedding-001',
+        contents="test text"
+    )
+    print("EMBEDDING SUCCESS")
+    
+    print("Testing Chat Model: gemini-2.0-flash")
+    gen_resp = client.models.generate_content(
+        model='gemini-2.0-flash',
+        contents="Hello"
+    )
+    print(f"GENERATION SUCCESS: {gen_resp.text[:50]}...")
+except Exception as e:
+    print(f"FAILED: {e}")
