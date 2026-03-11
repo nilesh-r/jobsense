@@ -1,15 +1,17 @@
+import os
 import requests
 
 def test_ats():
-    print("Testing AI Service ATS score endpoint directly...")
+    base_url = os.getenv("API_URL", "http://localhost:8000")
+    print(f"Testing AI Service ATS score endpoint directly at {base_url}...")
     try:
         res = requests.post(
-            "https://jobsense-4.onrender.com/score-resume-vs-jd",
+            f"{base_url}/score-resume-vs-jd",
             json={
                 "resume_text": "Experienced software engineer skilled in Python, React, and Node.js.",
                 "job_description": "Looking for a software engineer with Python, React, and AWS."
             },
-            timeout=60
+            timeout=120
         )
         print(f"Status: {res.status_code}")
         print("Response JSON:")

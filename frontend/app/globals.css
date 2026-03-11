@@ -132,7 +132,6 @@ body {
   border-radius: 1.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  position: relative;
 }
 
 .premium-card::after {
@@ -158,6 +157,7 @@ body {
 .text-reveal {
   background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

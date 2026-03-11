@@ -1,12 +1,14 @@
+import os
 import requests
 
 def test_chat():
-    print("Testing AI Service Chat endpoint directly...")
+    base_url = os.getenv("API_URL", "http://localhost:8000")
+    print(f"Testing AI Service Chat endpoint directly at {base_url}...")
     try:
         res = requests.post(
-            "https://jobsense-4.onrender.com/chat",
+            f"{base_url}/chat",
             json={"message": "hello, what can you do?"},
-            timeout=60
+            timeout=120
         )
         print(f"Status: {res.status_code}")
         print("Response JSON:")

@@ -1,8 +1,10 @@
 import requests
 import time
 
+import os
+
 def test_full_flow():
-    base_url = "https://jobsense.onrender.com/api"
+    base_url = os.getenv("API_URL", "http://localhost:5000/api")
     print("Registering test user...")
     try:
         # 1. Register
