@@ -55,18 +55,14 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         if not client:
             raise HTTPException(status_code=500, detail="Gemini API is not configured or unavailable")
             
-        # Generate embeddings using lightweight Google Gemini API rather than heavy local PyTorch
-        resume_response = client.models.embed_content(
+        # Generate embeddings using batch call to minimize network roundtrips
+        response = client.models.embed_content(
             model='gemini-embedding-001',
-            contents=request.resume_text,
+            contents=[request.resume_text, request.job_description],
         )
-        resume_embedding = np.array(resume_response.embeddings[0].values)
         
-        jd_response = client.models.embed_content(
-            model='gemini-embedding-001',
-            contents=request.job_description,
-        )
-        jd_embedding = np.array(jd_response.embeddings[0].values)
+        resume_embedding = np.array(response.embeddings[0].values)
+        jd_embedding = np.array(response.embeddings[1].values)
         
         # Calculate cosine similarity
         similarity = float(np.dot(resume_embedding, jd_embedding) / 

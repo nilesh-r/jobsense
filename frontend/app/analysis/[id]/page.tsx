@@ -55,6 +55,7 @@ export default function AnalysisPage() {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    fetchAnalysis();
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
