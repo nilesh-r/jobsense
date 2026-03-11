@@ -69,30 +69,38 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         similarity = float(np.dot(resume_embedding, jd_embedding) / 
                           (np.linalg.norm(resume_embedding) * np.linalg.norm(jd_embedding)))
         
-        # Use Gemini for Deep Analysis
+        # Use Gemini for High-Precision Senior Recruiter Analysis
         analysis_prompt = f"""
-        Analyze this resume against the job description.
+        Role: Senior Technical Recruiter & ATS Optimization Expert.
+        Task: Perform a deep, "perfect" analysis of the provided Resume against the Job Description (JD).
         
-        Resume:
+        Resume Content:
         {request.resume_text}
         
         Job Description:
         {request.job_description}
         
-        Provide a detailed JSON response with these keys:
-        - matched_points: List of specific points/achievements in the resume that match the job description.
-        - missing_points: List of critical JD requirements missing from the resume.
-        - action_plan: List of specific, actionable steps to make the resume "ATS-strong" for this role.
-        - key_skills_found: List of technical skills found in both.
-        - key_skills_missing: List of technical skills missing in the resume but required by the JD.
+        Instructions:
+        1. matched_points: Identify specific achievements/experiences in the resume that align with the JD. Quote or rephrase them effectively.
+        2. missing_points: Identify critical JD requirements (skills, experience, or certifications) that are completely absent or insufficient in the resume.
+        3. action_plan: Provide 3-5 high-impact, actionable steps. Use the format: "Add/Modify '[Original Text]' to '[Optimized Text]' to emphasize [Skill/Impact]".
+        4. key_skills_found: List technical tools and hard skills matched.
+        5. key_skills_missing: List technical tools and hard skills missing.
         
-        Return ONLY the JSON.
+        Quality Requirements:
+        - Be extremely specific. No generic advice.
+        - Identify semantic matches (e.g., if JD wants 'Postgres' and resume says 'Relational Databases', mention this gap).
+        - Focus on quantifying impact (numbers, percentages).
+        
+        Return ONLY a JSON object with these keys: 
+        "matched_points", "missing_points", "action_plan", "key_skills_found", "key_skills_missing".
         """
         
         analysis_response = client.models.generate_content(
             model='gemini-2.0-flash',
             config=types.GenerateContentConfig(
                 response_mime_type='application/json',
+                temperature=0.2, # Low temperature for consistent, precise analysis
             ),
             contents=analysis_prompt,
         )
