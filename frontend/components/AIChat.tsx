@@ -80,9 +80,9 @@ export default function AIChat() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 right-8 z-[1000] w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 hover:scale-110 transition-all duration-300 group"
+        className="fixed bottom-8 right-8 z-[1000] w-14 h-14 bg-indigo-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:bg-indigo-400 hover:scale-110 transition-all duration-300 group"
       >
-        <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20 group-hover:hidden"></span>
+        <span className="absolute inset-0 rounded-full bg-indigo-500 animate-ping opacity-20 group-hover:hidden"></span>
         <svg className="w-6 h-6 text-white group-hover:rotate-12 transition-transform relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
@@ -102,18 +102,18 @@ export default function AIChat() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed bottom-24 right-8 z-[1020] w-[400px] h-[600px] max-h-[calc(100vh-10rem)] premium-card flex flex-col shadow-2xl overflow-hidden glass-strong"
+              className="fixed bottom-24 right-8 z-[1020] w-[400px] h-[600px] max-h-[calc(100vh-10rem)] premium-card flex flex-col shadow-2xl overflow-hidden"
             >
               {/* Header */}
-              <div className="p-5 bg-surface/50 backdrop-blur-xl border-b border-premium flex justify-between items-center">
+              <div className="p-5 bg-white/5 backdrop-blur-xl border-b border-white/10 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-foreground font-bold text-base leading-tight">JobSense Assistant</h3>
+                    <h3 className="text-white font-bold text-base leading-tight">JobSense Assistant</h3>
                     <div className="flex items-center gap-1.5">
                       <div className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -123,7 +123,7 @@ export default function AIChat() {
                     </div>
                   </div>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="p-2 text-muted hover:text-foreground rounded-lg hover:bg-foreground/5 transition-colors">
+                <button onClick={() => setIsOpen(false)} className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -134,15 +134,15 @@ export default function AIChat() {
               <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 shadow-sm ${
-                      msg.role === 'user' ? 'bg-primary/20 text-primary' : 'bg-surface border border-premium text-muted'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                      msg.role === 'user' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-slate-700 text-slate-300'
                     }`}>
                       {msg.role === 'user' ? 'ME' : 'AI'}
                     </div>
                     <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
                       msg.role === 'user' 
-                        ? 'bg-primary text-white rounded-tr-none shadow-primary/20' 
-                        : 'bg-surface border border-premium text-foreground rounded-tl-none prose prose-slate dark:prose-invert prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0'
+                        ? 'bg-indigo-600 text-white rounded-tr-none' 
+                        : 'bg-slate-800 border border-white/5 text-slate-200 rounded-tl-none prose prose-invert prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0'
                     }`}>
                       {msg.role === 'user' ? (
                         msg.content
@@ -154,23 +154,23 @@ export default function AIChat() {
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="bg-surface border border-premium rounded-2xl px-4 py-3 shadow-sm">
+                    <div className="bg-slate-800/50 border border-white/5 rounded-2xl px-4 py-3">
                       <div className="flex gap-2">
-                          <motion.div 
-                            animate={{ scale: [1, 1.2, 1] }} 
-                            transition={{ repeat: Infinity, duration: 1 }} 
-                            className="w-2 h-2 bg-primary rounded-full" 
-                          />
-                          <motion.div 
-                            animate={{ scale: [1, 1.2, 1] }} 
-                            transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
-                            className="w-2 h-2 bg-primary rounded-full" 
-                          />
-                          <motion.div 
-                            animate={{ scale: [1, 1.2, 1] }} 
-                            transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
-                            className="w-2 h-2 bg-primary rounded-full" 
-                          />
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }} 
+                          transition={{ repeat: Infinity, duration: 1 }} 
+                          className="w-2 h-2 bg-indigo-500 rounded-full" 
+                        />
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }} 
+                          transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
+                          className="w-2 h-2 bg-indigo-500 rounded-full" 
+                        />
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }} 
+                          transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
+                          className="w-2 h-2 bg-indigo-500 rounded-full" 
+                        />
                       </div>
                     </div>
                   </div>
@@ -179,14 +179,14 @@ export default function AIChat() {
               </div>
 
               {/* Footer / Input */}
-              <div className="p-6 bg-surface/50 border-t border-premium space-y-4">
+              <div className="p-6 bg-slate-900/50 border-t border-white/5 space-y-4">
                 {suggestions.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {suggestions.map((s, i) => (
                       <button 
                         key={i} 
                         onClick={() => setInput(s)}
-                        className="text-[10px] bg-foreground/5 hover:bg-foreground/10 text-muted border border-premium px-3 py-1.5 rounded-full transition-colors font-medium"
+                        className="text-[10px] bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 px-3 py-1.5 rounded-full transition-colors font-medium"
                       >
                         {s}
                       </button>
@@ -200,12 +200,12 @@ export default function AIChat() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Type your message..."
-                    className="flex-1 bg-surface border border-premium rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-primary transition-colors placeholder-muted/50"
+                    className="flex-1 bg-slate-950 border border-indigo-500/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors placeholder-slate-600"
                   />
                   <button 
                     onClick={handleSend}
                     disabled={loading || !input.trim()}
-                    className="w-11 h-11 bg-primary hover:opacity-90 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-all shadow-lg shadow-primary/20 shrink-0"
+                    className="w-11 h-11 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-all shadow-lg shadow-indigo-500/20 shrink-0"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
