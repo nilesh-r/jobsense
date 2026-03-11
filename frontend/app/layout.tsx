@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "Analyze your resume against job descriptions with AI-powered ATS scoring",
 };
 
+import AIChat from "@/components/AIChat";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,6 +24,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <Toaster position="top-right" />
+          <AIChat />
         </Providers>
       </body>
     </html>

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import AIChat from '@/components/AIChat';
 import { isAuthenticated } from '@/lib/auth';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -74,7 +73,6 @@ export default function AnalyticsPage() {
   return (
     <div className="premium-bg min-h-screen pb-32">
       <Navbar />
-      <AIChat />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <h1 className="text-4xl font-bold mb-8 text-white text-glow">Analytics Dashboard</h1>
 

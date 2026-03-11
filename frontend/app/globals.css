@@ -39,20 +39,6 @@ body {
   min-height: 100vh;
 }
 
-.premium-card {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.premium-card:hover {
-  border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.1);
-  transform: translateY(-4px);
-}
 
 /* Typography & Effects */
 .text-gradient {
@@ -147,7 +133,6 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
-  z-index: 10;
 }
 
 .premium-card::after {

@@ -88,10 +88,10 @@ export default function AIChat() {
               onClick={() => setIsOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, x: -20, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -20, scale: 0.95 }}
-              className="fixed bottom-8 left-8 z-[120] w-[400px] h-[600px] max-h-[calc(100vh-8rem)] premium-card flex flex-col shadow-2xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed bottom-24 right-8 z-[120] w-[400px] h-[600px] max-h-[calc(100vh-10rem)] premium-card flex flex-col shadow-2xl overflow-hidden"
             >
               {/* Header */}
               <div className="p-6 bg-slate-900/50 border-b border-white/5 flex justify-between items-center">
@@ -126,7 +126,7 @@ export default function AIChat() {
                     <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                       msg.role === 'user' 
                         ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/10' 
-                        : 'bg-slate-800/50 border border-white/5 text-slate-200'
+                        : 'bg-slate-800 border border-white/5 text-slate-200'
                     }`}>
                       {msg.content}
                     </div>

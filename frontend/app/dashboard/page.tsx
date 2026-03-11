@@ -6,7 +6,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import AIChat from '@/components/AIChat';
 import { isAuthenticated } from '@/lib/auth';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -136,7 +135,6 @@ export default function DashboardPage() {
   return (
     <div className="premium-bg min-h-screen">
       <Navbar />
-      <AIChat />
       
       <main className="container mx-auto px-6 py-12">
         <header className="mb-12">
