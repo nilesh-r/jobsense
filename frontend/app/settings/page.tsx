@@ -233,8 +233,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-white/10 text-white'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'glass-strong text-white'
+                  : 'glass text-white/60 hover:text-white'
               }`}
             >
               {tab.label}
@@ -255,7 +255,7 @@ export default function SettingsPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                   />
                 </div>
                 <div>
@@ -264,14 +264,14 @@ export default function SettingsPage() {
                     type="email"
                     value={formData.email}
                     disabled
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-slate-400 cursor-not-allowed border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white/60 cursor-not-allowed"
                   />
-                  <p className="text-xs text-slate-400 mt-1">Email cannot be changed</p>
+                  <p className="text-xs text-white/60 mt-1">Email cannot be changed</p>
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                  className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
                 >
                   {loading ? 'Updating...' : 'Update Profile'}
                 </button>
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                     value={formData.currentPassword}
                     onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
                     required
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     placeholder="••••••••"
                   />
                 </div>
@@ -300,7 +300,7 @@ export default function SettingsPage() {
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                     required
                     minLength={6}
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     placeholder="••••••••"
                   />
                 </div>
@@ -312,14 +312,14 @@ export default function SettingsPage() {
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     required
                     minLength={6}
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                     placeholder="••••••••"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                  className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
                 >
                   {loading ? 'Changing...' : 'Change Password'}
                 </button>
@@ -338,11 +338,11 @@ export default function SettingsPage() {
                 <select
                   value={formData.defaultResumeId}
                   onChange={(e) => setFormData({ ...formData, defaultResumeId: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 >
-                  <option value="" className="text-gray-900">Select a default resume</option>
+                  <option value="">Select a default resume</option>
                   {resumes.map((resume) => (
-                    <option key={resume.id} value={resume.id} className="text-gray-900">
+                    <option key={resume.id} value={resume.id} className="bg-gray-800">
                       {resume.originalFileName}
                     </option>
                   ))}
@@ -355,7 +355,7 @@ export default function SettingsPage() {
                   value={formData.defaultJobRole}
                   onChange={(e) => setFormData({ ...formData, defaultJobRole: e.target.value })}
                   placeholder="e.g., Software Engineer, Product Manager"
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 />
               </div>
               <div>
@@ -363,19 +363,19 @@ export default function SettingsPage() {
                 <select
                   value={formData.experienceLevel}
                   onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 >
-                  <option value="" className="text-gray-900">Select experience level</option>
-                  <option value="entry" className="text-gray-900">Entry Level (0-2 years)</option>
-                  <option value="mid" className="text-gray-900">Mid Level (3-5 years)</option>
-                  <option value="senior" className="text-gray-900">Senior Level (6-10 years)</option>
-                  <option value="executive" className="text-gray-900">Executive (10+ years)</option>
+                  <option value="">Select experience level</option>
+                  <option value="entry" className="bg-gray-800">Entry Level (0-2 years)</option>
+                  <option value="mid" className="bg-gray-800">Mid Level (3-5 years)</option>
+                  <option value="senior" className="bg-gray-800">Senior Level (6-10 years)</option>
+                  <option value="executive" className="bg-gray-800">Executive (10+ years)</option>
                 </select>
               </div>
               <button
                 onClick={handleSavePreferences}
                 disabled={loading}
-                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg shadow-indigo-500/20"
+                className="w-full bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Preferences'}
               </button>
@@ -393,11 +393,11 @@ export default function SettingsPage() {
                 <select
                   value={formData.analysisDetailLevel}
                   onChange={(e) => setFormData({ ...formData, analysisDetailLevel: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 >
-                  <option value="basic" className="text-gray-900">Basic (Quick overview)</option>
-                  <option value="standard" className="text-gray-900">Standard (Recommended)</option>
-                  <option value="detailed" className="text-gray-900">Detailed (Comprehensive analysis)</option>
+                  <option value="basic" className="bg-gray-800">Basic (Quick overview)</option>
+                  <option value="standard" className="bg-gray-800">Standard (Recommended)</option>
+                  <option value="detailed" className="bg-gray-800">Detailed (Comprehensive analysis)</option>
                 </select>
               </div>
               <div>
@@ -405,10 +405,10 @@ export default function SettingsPage() {
                 <select
                   value={formData.language}
                   onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 >
-                  <option value="english" className="text-gray-900">English</option>
-                  <option value="hinglish" className="text-gray-900">Hinglish</option>
+                  <option value="english" className="bg-gray-800">English</option>
+                  <option value="hinglish" className="bg-gray-800">Hinglish</option>
                 </select>
               </div>
               <div>
@@ -418,9 +418,9 @@ export default function SettingsPage() {
                   value={formData.tone}
                   onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
                   placeholder="e.g., Professional, Friendly, Casual"
-                  className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all border border-white/10"
+                  className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
                 />
-                <p className="text-xs text-slate-400 mt-1">Customize the tone of AI suggestions</p>
+                <p className="text-xs text-white/60 mt-1">Customize the tone of AI suggestions</p>
               </div>
               <button
                 onClick={handleSavePreferences}
@@ -438,7 +438,7 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <div className="premium-card spotlight-card p-6 rounded-3xl">
               <h2 className="text-2xl font-semibold mb-6 text-white">Clear All Analyses</h2>
-              <p className="text-slate-400 mb-4">
+              <p className="text-white/80 mb-4">
                 This will permanently delete all your analysis history. This action cannot be undone.
               </p>
               <button
@@ -452,20 +452,20 @@ export default function SettingsPage() {
 
             <div className="premium-card spotlight-card p-6 rounded-3xl border border-red-500/30">
               <h2 className="text-2xl font-semibold mb-6 text-red-400">Delete Account</h2>
-              <p className="text-slate-400 mb-4">
+              <p className="text-white/80 mb-4">
                 This will permanently delete your account and all associated data. This action cannot be undone.
               </p>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-white/90">
-                    Type <span className="text-red-400 font-bold">DELETE</span> to confirm
+                    Type <span className="text-red-400">DELETE</span> to confirm
                   </label>
                   <input
                     type="text"
                     value={formData.confirmDelete}
                     onChange={(e) => setFormData({ ...formData, confirmDelete: e.target.value })}
                     placeholder="DELETE"
-                    className="w-full px-4 py-3 bg-white/5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all border border-white/10"
+                    className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
                   />
                 </div>
                 <button

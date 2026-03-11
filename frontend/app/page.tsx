@@ -97,7 +97,7 @@ export default function Home() {
             className="relative"
           >
             <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full animate-pulse" />
-            <div className="relative premium-card p-2 overflow-hidden aspect-square flex items-center justify-center border-white/10">
+            <div className="relative premium-card p-2 overflow-hidden aspect-square flex items-center justify-center border-indigo-500/30">
               <Image 
                 src="/images/hero_ai.png" 
                 alt="AI Neural Network" 
@@ -120,7 +120,7 @@ export default function Home() {
             { 
               title: 'Gap Analysis', 
               desc: 'Pinpoint exactly which keywords and skills are missing compared to high-performing candidates.',
-              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 0 002 2h2a2 2 0 002-2M9 5a2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             },
             { 
               title: 'AI Optimization', 
@@ -149,5 +149,4 @@ export default function Home() {
     </div>
   );
 }
-
 

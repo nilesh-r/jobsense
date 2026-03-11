@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-.dark {
+:root {
   --background: #030712;
   --foreground: #f8fafc;
   --primary: #6366f1;
@@ -8,18 +8,6 @@
   --surface: #0f172a;
   --border: rgba(255, 255, 255, 0.08);
   --muted: #64748b;
-  --card-bg: rgba(15, 23, 42, 0.7);
-}
-
-.light {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-hover: #4338ca;
-  --surface: #ffffff;
-  --border: rgba(15, 23, 42, 0.08);
-  --muted: #475569;
-  --card-bg: rgba(255, 255, 255, 0.8);
 }
 
 @theme inline {
@@ -46,36 +34,18 @@ body {
 .premium-bg {
   background-color: var(--background);
   background-image: 
-    radial-gradient(circle at 50% -20%, var(--primary), transparent 60%),
-    radial-gradient(circle at 100% 100%, var(--primary), transparent 40%);
-  background-size: 100% 100%;
-  background-attachment: fixed;
-  min-height: 100vh;
-}
-
-.dark .premium-bg {
-  background-image: 
     radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
     radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.05) 0%, transparent 40%);
-}
-
-.light .premium-bg {
-  background-image: 
-    radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.05) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.03) 0%, transparent 40%);
+  min-height: 100vh;
 }
 
 
 /* Typography & Effects */
 .text-gradient {
-  background: linear-gradient(135deg, var(--foreground) 0%, var(--muted) 100%);
+  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.dark .text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
 }
 
 .text-glow {
@@ -109,17 +79,8 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  border-radius: 10px;
-  opacity: 0.5;
-}
-
-.dark ::-webkit-scrollbar-thumb {
   background: #1e293b;
-}
-
-.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -128,32 +89,15 @@ body {
 
 /* Glass variants */
 .glass {
-  background: var(--surface);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  opacity: 0.9;
-}
-
-.dark .glass {
   background: rgba(255, 255, 255, 0.03);
-}
-
-.light .glass {
-  background: rgba(15, 23, 42, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .glass-strong {
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-}
-
-.dark .glass-strong {
   background: rgba(255, 255, 255, 0.05);
-}
-
-.light .glass-strong {
-  background: rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Advanced UI Effects */
@@ -182,16 +126,12 @@ body {
 }
 
 .premium-card {
-  background: var(--card-bg);
+  background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.dark .premium-card {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .premium-card::after {
@@ -215,14 +155,10 @@ body {
 }
 
 .text-reveal {
-  background: linear-gradient(to bottom, var(--foreground) 30%, var(--muted));
+  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.dark .text-reveal {
-  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
 }
 
 /* Animations */
@@ -233,12 +169,8 @@ body {
 }
 
 .animated-bg {
-  background: var(--background);
-  position: relative;
-}
-
-.dark .animated-bg {
   background: radial-gradient(circle at 50% 50%, #030712 0%, #020617 100%);
+  position: relative;
 }
 
 .animated-bg::before {
@@ -248,7 +180,6 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, var(--primary), transparent 50%);
-  opacity: 0.05;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
   animation: mesh-gradient 20s ease infinite;
 }

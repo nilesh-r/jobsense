@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { getUser, clearAuth } from '@/lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
-import DarkModeToggle from './DarkModeToggle';
 
 export default function Navbar() {
   const router = useRouter();
@@ -46,7 +45,7 @@ export default function Navbar() {
   if (!mounted) return null;
 
   return (
-    <nav className="border-b border-white/10 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50">
+    <nav className="border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto px-6 h-18 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)] group-hover:scale-110 transition-transform">
@@ -75,17 +74,14 @@ export default function Navbar() {
               ))}
             </div>
 
-            <div className="flex items-center gap-4">
-              <DarkModeToggle />
-              <div className="h-6 w-px bg-white/10" />
-            </div>
+            <div className="h-6 w-px bg-white/10 mx-2" />
 
             <div className="relative">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-foreground/5 transition-colors group"
+                className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-white/5 transition-colors group"
               >
-                <span className="text-sm font-medium text-slate-400 group-hover:text-white transition-colors">{user.name}</span>
+                <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{user.name}</span>
                 <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center border border-white/10">
                   <span className="text-xs font-bold text-indigo-400">{user.name.charAt(0).toUpperCase()}</span>
                 </div>

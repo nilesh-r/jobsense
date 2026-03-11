@@ -78,7 +78,7 @@ export default function AnalysisPage() {
       <div className="premium-bg min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-foreground font-medium animate-pulse">Loading Deep Scan...</div>
+          <div className="text-center text-white">Loading...</div>
         </div>
       </div>
     );
@@ -95,7 +95,7 @@ export default function AnalysisPage() {
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="glass text-foreground px-6 py-2 rounded-xl hover:bg-foreground/10 transition-all font-medium border border-premium"
+            className="glass text-white px-6 py-2 rounded-xl hover:bg-white/20 transition-all font-medium"
           >
             ← Back
           </button>
@@ -105,21 +105,21 @@ export default function AnalysisPage() {
           {/* Left: Resume & Job Info */}
           <div className="space-y-6">
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">Resume</h2>
-              <p className="text-sm text-muted mb-3 font-medium">
+              <h2 className="text-xl font-semibold mb-4 text-white">Resume</h2>
+              <p className="text-sm text-white/80 mb-3 font-medium">
                 {analysis.resume.originalFileName}
               </p>
-              <div className="max-h-64 overflow-y-auto p-4 glass rounded-xl text-sm text-foreground/90">
+              <div className="max-h-64 overflow-y-auto p-4 glass rounded-xl text-sm text-white/90">
                 {analysis.resume.parsedText?.substring(0, 500)}...
               </div>
             </div>
 
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-xl font-semibold mb-4 text-foreground">Job Description</h2>
-              <p className="font-medium mb-3 text-foreground">
+              <h2 className="text-xl font-semibold mb-4 text-white">Job Description</h2>
+              <p className="font-medium mb-3 text-white">
                 {analysis.job.title} - {analysis.job.companyName}
               </p>
-              <div className="max-h-64 overflow-y-auto p-4 glass rounded-xl text-sm text-foreground/90">
+              <div className="max-h-64 overflow-y-auto p-4 glass rounded-xl text-sm text-white/90">
                 {analysis.job.jdText.substring(0, 500)}...
               </div>
             </div>
@@ -129,13 +129,13 @@ export default function AnalysisPage() {
           <div className="space-y-6">
             {/* Overall Score */}
             <div className="premium-card spotlight-card p-8 rounded-3xl text-center">
-              <h2 className="text-lg font-semibold mb-4 text-foreground">ATS Score</h2>
+              <h2 className="text-lg font-semibold mb-4 text-white">ATS Score</h2>
               <div className="text-7xl font-bold gradient-text mb-4">
                 {analysis.atsScore}%
               </div>
               <div className="w-full glass rounded-full h-6 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-primary to-purple-500 rounded-full transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000"
                   style={{ width: `${analysis.atsScore}%` }}
                 />
               </div>
@@ -143,12 +143,12 @@ export default function AnalysisPage() {
 
             {/* Score Breakdown */}
             <div className="premium-card spotlight-card p-6 rounded-3xl">
-              <h2 className="text-xl font-semibold mb-6 text-foreground">Score Breakdown</h2>
+              <h2 className="text-xl font-semibold mb-6 text-white">Score Breakdown</h2>
               <div className="space-y-5">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted">Keywords</span>
-                    <span className="font-semibold text-foreground">{analysis.keywordMatchScore}%</span>
+                    <span className="text-white/90">Keywords</span>
+                    <span className="font-semibold text-white">{analysis.keywordMatchScore}%</span>
                   </div>
                   <div className="w-full glass rounded-full h-3 overflow-hidden">
                     <div
@@ -159,8 +159,8 @@ export default function AnalysisPage() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted">Skills</span>
-                    <span className="font-semibold text-foreground">{analysis.skillsMatchScore}%</span>
+                    <span className="text-white/90">Skills</span>
+                    <span className="font-semibold text-white">{analysis.skillsMatchScore}%</span>
                   </div>
                   <div className="w-full glass rounded-full h-3 overflow-hidden">
                     <div
@@ -171,8 +171,8 @@ export default function AnalysisPage() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted">Experience</span>
-                    <span className="font-semibold text-foreground">{analysis.experienceMatchScore}%</span>
+                    <span className="text-white/90">Experience</span>
+                    <span className="font-semibold text-white">{analysis.experienceMatchScore}%</span>
                   </div>
                   <div className="w-full glass rounded-full h-3 overflow-hidden">
                     <div
@@ -184,8 +184,8 @@ export default function AnalysisPage() {
                 {analysis.embeddingSimilarity && (
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-muted">Semantic Similarity</span>
-                      <span className="font-semibold text-foreground">
+                      <span className="text-white/90">Semantic Similarity</span>
+                      <span className="font-semibold text-white">
                         {Math.round(analysis.embeddingSimilarity * 100)}%
                       </span>
                     </div>
@@ -205,7 +205,7 @@ export default function AnalysisPage() {
         {/* Missing Keywords */}
         {analysis.missingKeywords && analysis.missingKeywords.length > 0 && (
           <div className="premium-card spotlight-card p-6 rounded-3xl mb-6">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Missing Keywords</h2>
+            <h2 className="text-xl font-semibold mb-4 text-white">Missing Keywords</h2>
             <div className="flex flex-wrap gap-3">
               {analysis.missingKeywords.map((keyword, idx) => (
                 <span
@@ -222,7 +222,7 @@ export default function AnalysisPage() {
         {/* Partial Matches */}
         {analysis.partialMatchKeywords && analysis.partialMatchKeywords.length > 0 && (
           <div className="premium-card spotlight-card p-6 rounded-3xl mb-6">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Partial Matches</h2>
+            <h2 className="text-xl font-semibold mb-4 text-white">Partial Matches</h2>
             <div className="flex flex-wrap gap-3">
               {analysis.partialMatchKeywords.map((keyword, idx) => (
                 <span
@@ -239,13 +239,13 @@ export default function AnalysisPage() {
         {/* Detailed AI Analysis Breakdown */}
         {analysis.suggestions && !Array.isArray(analysis.suggestions) && (
           <div className="space-y-6">
-            <div className="premium-card spotlight-card p-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/10">
-              <h2 className="text-xl font-semibold mb-6 text-foreground flex items-center gap-2">
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
                 <span className="text-2xl">✅</span> Points of Match
               </h2>
               <ul className="space-y-3">
                 {(analysis.suggestions as any).matched_points?.map((item: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3 text-foreground/80 text-sm leading-relaxed">
+                  <li key={idx} className="flex items-start gap-3 text-slate-200 text-sm leading-relaxed">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-2" />
                     {item}
                   </li>
@@ -253,13 +253,13 @@ export default function AnalysisPage() {
               </ul>
             </div>
 
-            <div className="premium-card spotlight-card p-6 rounded-3xl border border-rose-500/20 bg-rose-500/10">
-              <h2 className="text-xl font-semibold mb-6 text-foreground flex items-center gap-2">
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-rose-500/20 bg-rose-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
                 <span className="text-2xl">❌</span> Missing Critical Points
               </h2>
               <ul className="space-y-3">
                 {(analysis.suggestions as any).missing_points?.map((item: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3 text-foreground/80 text-sm leading-relaxed">
+                  <li key={idx} className="flex items-start gap-3 text-slate-200 text-sm leading-relaxed">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-2" />
                     {item}
                   </li>
@@ -267,13 +267,13 @@ export default function AnalysisPage() {
               </ul>
             </div>
 
-            <div className="premium-card spotlight-card p-6 rounded-3xl border border-primary/20 bg-primary/10">
-              <h2 className="text-xl font-semibold mb-6 text-foreground flex items-center gap-2">
+            <div className="premium-card spotlight-card p-6 rounded-3xl border border-indigo-500/20 bg-indigo-500/5">
+              <h2 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
                 <span className="text-2xl">🚀</span> AI Core Action Plan
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {(analysis.suggestions as any).action_plan?.map((item: string, idx: number) => (
-                  <div key={idx} className="glass p-4 rounded-2xl text-foreground/80 text-sm leading-relaxed border border-primary/10">
+                  <div key={idx} className="glass p-4 rounded-2xl text-slate-200 text-sm leading-relaxed border border-indigo-500/10">
                     {item}
                   </div>
                 ))}
@@ -285,12 +285,12 @@ export default function AnalysisPage() {
         {/* Fallback for basic suggestions (Array format) */}
         {analysis.suggestions && Array.isArray(analysis.suggestions) && analysis.suggestions.length > 0 && (
           <div className="premium-card spotlight-card p-6 rounded-3xl">
-            <h2 className="text-xl font-semibold mb-6 text-foreground">Improvement Suggestions</h2>
+            <h2 className="text-xl font-semibold mb-6 text-white">Improvement Suggestions</h2>
             <ul className="space-y-4">
               {analysis.suggestions.map((suggestion, idx) => (
                 <li key={idx} className="flex items-start glass p-4 rounded-xl">
-                  <span className="text-primary mr-3 text-xl">✨</span>
-                  <span className="text-foreground/90 leading-relaxed">{suggestion}</span>
+                  <span className="text-indigo-300 mr-3 text-xl">✨</span>
+                  <span className="text-white/90 leading-relaxed">{suggestion}</span>
                 </li>
               ))}
             </ul>
