@@ -45,7 +45,7 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={toggleDarkMode}
-      className="glass-strong p-3 rounded-xl text-white hover:bg-white/20 transition-all duration-300 relative overflow-hidden group"
+      className="glass-strong p-3 rounded-xl text-foreground hover:bg-black/5 dark:hover:bg-white/20 transition-all duration-300 relative overflow-hidden group"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
@@ -62,7 +62,7 @@ export default function DarkModeToggle() {
           </svg>
         )}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
     </button>
   );
 }

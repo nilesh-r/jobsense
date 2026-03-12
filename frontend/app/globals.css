@@ -1,13 +1,41 @@
 @import "tailwindcss";
 
 :root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --surface: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --premium-card-bg: rgba(255, 255, 255, 0.8);
+  --premium-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  --text-reveal-start: #334155;
+  --text-reveal-end: rgba(15, 23, 42, 0.4);
+  --text-glow-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  --text-gradient-start: #0f172a;
+  --text-gradient-end: #475569;
+}
+
+.dark {
   --background: #030712;
   --foreground: #f8fafc;
   --primary: #6366f1;
   --primary-hover: #4f46e5;
   --surface: #0f172a;
   --border: rgba(255, 255, 255, 0.08);
-  --muted: #64748b;
+  --muted: #94a3b8;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --premium-card-bg: rgba(15, 23, 42, 0.7);
+  --premium-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --text-reveal-start: #fff;
+  --text-reveal-end: rgba(255, 255, 255, 0.5);
+  --text-glow-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+  --text-gradient-start: #fff;
+  --text-gradient-end: #cbd5e1;
 }
 
 @theme inline {
@@ -34,22 +62,23 @@ body {
 .premium-bg {
   background-color: var(--background);
   background-image: 
-    radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.1) 0%, transparent 40%);
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 
 /* Typography & Effects */
 .text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+  background: linear-gradient(135deg, var(--text-gradient-start) 0%, var(--text-gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-glow {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+  text-shadow: var(--text-glow-shadow);
 }
 
 /* Buttons */
@@ -89,15 +118,15 @@ body {
 
 /* Glass variants */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-bg);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
 }
 
 /* Advanced UI Effects */
@@ -126,11 +155,11 @@ body {
 }
 
 .premium-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--premium-card-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
   border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--premium-card-shadow);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -140,7 +169,7 @@ body {
   inset: 0;
   border-radius: 1.5rem;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent, rgba(99,102,241,0.1));
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), transparent, rgba(99,102,241,0.1));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -150,12 +179,12 @@ body {
 
 .premium-card:hover {
   border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1);
   transform: translateY(-8px) scale(1.02);
 }
 
 .text-reveal {
-  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5));
+  background: linear-gradient(to bottom, var(--text-reveal-start) 30%, var(--text-reveal-end));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -169,7 +198,7 @@ body {
 }
 
 .animated-bg {
-  background: radial-gradient(circle at 50% 50%, #030712 0%, #020617 100%);
+  background: radial-gradient(circle at 50% 50%, var(--background) 0%, var(--surface) 100%);
   position: relative;
 }
 

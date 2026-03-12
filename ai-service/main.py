@@ -89,7 +89,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
         """
         
         analysis_response = client.models.generate_content(
-            model='gemini-flash-latest',
+            model='gemini-1.5-flash',
             config=types.GenerateContentConfig(
                 response_mime_type='application/json',
                 temperature=0.1,

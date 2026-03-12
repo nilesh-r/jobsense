@@ -47,17 +47,17 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 dark:bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600 dark:bg-indigo-500"></span>
               </span>
               AI Core v3.0 Powered
             </div>
-            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter text-white leading-[0.9]">
-              JobSense <span className="text-indigo-500 text-glow">AI</span>
+            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter text-foreground leading-[0.9]">
+              JobSense <span className="text-primary text-glow">AI</span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 mb-12 font-medium leading-relaxed max-w-xl text-reveal">
+            <p className="text-xl md:text-2xl text-muted mb-12 font-medium leading-relaxed max-w-xl text-reveal">
               The professional edge for your career. AI-powered ATS scoring, 
               keyword gap analysis, and personalized resume optimization.
             </p>
@@ -80,7 +80,7 @@ export default function Home() {
                   </Link>
                   <Link
                     href="/register"
-                    className="px-12 py-4 rounded-xl text-lg font-semibold border border-white/10 hover:bg-white/5 transition-all text-white w-full sm:w-auto text-center"
+                    className="px-12 py-4 rounded-xl text-lg font-semibold border border-border-premium hover:bg-black/5 dark:hover:bg-white/5 transition-all text-foreground w-full sm:w-auto text-center"
                   >
                     Create Account
                   </Link>
@@ -140,8 +140,8 @@ export default function Home() {
                   {feature.icon}
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">{feature.title}</h3>
+              <p className="text-muted leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
         </div>

@@ -53,7 +53,7 @@ export default function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-xl font-bold text-white tracking-tight">JobSense<span className="text-indigo-400">AI</span></span>
+          <span className="text-xl font-bold text-foreground tracking-tight">JobSense<span className="text-primary">AI</span></span>
         </Link>
 
         {user ? (
@@ -65,8 +65,8 @@ export default function Navbar() {
                   href={link.href}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     pathname === link.href 
-                      ? 'text-white bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] border border-indigo-500/20' 
-                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+                      ? 'text-primary bg-primary/10 shadow-[0_0_15px_rgba(99,102,241,0.2)] border border-primary/20' 
+                      : 'text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   {link.name}

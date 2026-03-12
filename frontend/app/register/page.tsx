@@ -51,14 +51,14 @@ export default function RegisterPage() {
       </div>
       <div className="glass-strong p-10 rounded-3xl shadow-2xl w-full max-w-md backdrop-blur-xl">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2 text-glow">
+          <h1 className="text-4xl font-bold text-foreground mb-2 text-glow">
             Create Account
           </h1>
-          <p className="text-white/80">Start optimizing your resume today</p>
+          <p className="text-muted">Start optimizing your resume today</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Name
             </label>
             <input
@@ -66,12 +66,12 @@ export default function RegisterPage() {
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               placeholder="John Doe"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Email
             </label>
             <input
@@ -79,12 +79,12 @@ export default function RegisterPage() {
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               placeholder="your@email.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
             <input
@@ -92,12 +92,12 @@ export default function RegisterPage() {
               required
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               placeholder="••••••••"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Confirm Password
             </label>
             <input
@@ -105,14 +105,13 @@ export default function RegisterPage() {
               required
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full px-4 py-3 glass rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 glass rounded-xl text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               placeholder="••••••••"
             />
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-white/20 hover:bg-white/30 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 backdrop-blur-sm border border-white/20"
+            className="w-full btn-primary py-3"
           >
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
@@ -120,15 +119,15 @@ export default function RegisterPage() {
 
         {/* Divider */}
         <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-white/20"></div>
-          <span className="px-4 text-white/60 text-sm">OR</span>
-          <div className="flex-1 border-t border-white/20"></div>
+          <div className="flex-1 border-t border-black/10 dark:border-white/20"></div>
+          <span className="px-4 text-black/50 dark:text-white/60 text-sm">OR</span>
+          <div className="flex-1 border-t border-black/10 dark:border-white/20"></div>
         </div>
 
         {/* Google OAuth Button */}
         <a
           href={`${API_URL}/api/auth/google`}
-          className="w-full glass-strong flex items-center justify-center space-x-3 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
+          className="w-full glass-strong flex items-center justify-center space-x-3 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/20 transition-all duration-300"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -148,12 +147,12 @@ export default function RegisterPage() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span className="text-white font-semibold">Continue with Google</span>
+          <span className="text-foreground font-semibold">Continue with Google</span>
         </a>
 
-        <p className="mt-6 text-center text-sm text-white/80">
+        <p className="mt-6 text-center text-sm text-muted">
           Already have an account?{' '}
-          <Link href="/login" className="text-white font-semibold hover:underline">
+          <Link href="/login" className="text-foreground font-semibold hover:underline hover:text-primary">
             Login
           </Link>
         </p>
