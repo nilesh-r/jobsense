@@ -105,7 +105,7 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
             suggestions=detailed_analysis.get('action_plan', []),
             matched_skills=detailed_analysis.get('key_skills_found', []),
             missing_skills=detailed_analysis.get('key_skills_missing', []),
-            detailed_analysis={**detailed_analysis, "version": "v1.1-perfect-scoring"}
+            detailed_analysis={**detailed_analysis, "version": "v3.0-perfect-scoring"}
         )
     except Exception as e:
         error_msg = str(e).lower()

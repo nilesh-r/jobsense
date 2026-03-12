@@ -67,7 +67,9 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
     let experienceScore = basicScore.experienceScore;
 
     if (detailedAnalysis) {
-      finalAtsScore = detailedAnalysis.overall_score !== undefined ? detailedAnalysis.overall_score : Math.round(embeddingSimilarity! * 100);
+      finalAtsScore = detailedAnalysis.overall_score !== undefined 
+        ? detailedAnalysis.overall_score 
+        : (embeddingSimilarity !== null ? Math.round(embeddingSimilarity * 100) : finalAtsScore);
       keywordScore = detailedAnalysis.keyword_score !== undefined ? detailedAnalysis.keyword_score : keywordScore;
       skillsScore = detailedAnalysis.skills_score !== undefined ? detailedAnalysis.skills_score : skillsScore;
       experienceScore = detailedAnalysis.experience_score !== undefined ? detailedAnalysis.experience_score : experienceScore;

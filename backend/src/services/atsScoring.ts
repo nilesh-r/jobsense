@@ -16,7 +16,7 @@ export function analyzeResume(resumeText: string, jobDescription: string): Scori
   const jdWords = jdLower
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
-    .filter(word => word.length > 3);
+    .filter(word => word.length >= 2);
 
   // Common tech  // Expanded keyword list for better fallback scoring
   const techKeywords = [

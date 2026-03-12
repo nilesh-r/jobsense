@@ -84,7 +84,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white/20 hover:bg白/30 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 backdrop-blur-sm border border-white/20"
+            className="w-full bg-white/20 hover:bg-white/30 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 backdrop-blur-sm border border-white/20"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
         {/* Google OAuth Button */}
         <a
-          href={`${API_BASE}/api/auth/google`}
+          href={`${API_URL}/api/auth/google`}
           className="w-full glass-strong flex items-center justify-center space-x-3 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">

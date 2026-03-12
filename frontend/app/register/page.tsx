@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DarkModeToggle from '@/components/DarkModeToggle';
-import api from '@/lib/api';
+import api, { API_URL } from '@/lib/api';
 import { setAuth } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
         {/* Google OAuth Button */}
         <a
-          href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/google`}
+          href={`${API_URL}/api/auth/google`}
           className="w-full glass-strong flex items-center justify-center space-x-3 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">

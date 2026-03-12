@@ -297,7 +297,7 @@ export default function DashboardPage() {
                   >
                     <div className="flex justify-between items-center mb-8">
                       <h2 className="text-xl font-bold text-white">Compare & Analyze</h2>
-                      <div className="px-3 py-1 bg-indigo-500/10 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">AI Core v2.0</div>
+                      <div className="px-3 py-1 bg-indigo-500/10 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest">AI Core v3.0</div>
                     </div>
 
                     <form onSubmit={(e) => {
