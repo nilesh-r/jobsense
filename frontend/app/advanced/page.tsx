@@ -89,7 +89,7 @@ export default function AdvancedAIPage() {
       <div className="container mx-auto px-4 py-8 relative z-10">
         <h1 className="text-4xl font-bold mb-4 text-glow text-center">Advanced AI Features</h1>
         <p className="text-muted text-center mb-8 max-w-2xl mx-auto">
-          Test out the newly integrated ML models and advanced AI modules to see JobSense AI's full capabilities in action.
+          Test out the newly integrated ML models and advanced AI modules to see JobSense AI&apos;s full capabilities in action.
         </p>
 
         {/* Tabs */}

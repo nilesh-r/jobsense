@@ -61,6 +61,7 @@ export default function SettingsPage() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUser = async () => {
