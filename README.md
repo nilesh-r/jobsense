@@ -1,139 +1,211 @@
-# JobSense AI – Smart Job Matcher & ATS Analyzer
+# 🚀 JobSense AI: Your Smart Job Matcher & ATS Analyzer
 
-A full-stack web application that helps job seekers optimize their resumes by analyzing them against job descriptions using AI-powered ATS scoring, keyword gap analysis, and improvement suggestions.
+Welcome to **JobSense AI**, a cutting-edge full-stack web application designed to empower job seekers. In today's competitive job market, getting past the Applicant Tracking System (ATS) is half the battle. JobSense AI leverages advanced Artificial Intelligence to analyze your resume against job descriptions, providing you with actionable insights, intelligent scoring, and a strategic edge to land your dream job.
 
-## 🎯 Features
+![JobSense AI Banner](https://via.placeholder.com/1200x400?text=JobSense+AI+-+Unlock+Your+Career+Potential) <!-- Replace with an actual screenshot or banner -->
 
-### MVP Features
-- ✅ User authentication (JWT-based)
-- ✅ Resume upload and parsing (PDF/DOCX)
-- ✅ Job description input and storage
-- ✅ ATS scoring engine with keyword matching
-- ✅ Gap analysis (missing keywords, skill gaps)
-- ✅ Improvement suggestions
-- ✅ Analysis history and analytics dashboard
+---
 
-### Advanced Features
-### Advanced Features
-- 🔄 Semantic matching using embeddings
-- 🔄 Skill tags and profile building
-- 🔄 Advanced analytics with charts
-- ✅ True AI Conversational Coach using Google Gemini `2.5-flash`
+## ✨ Why JobSense AI?
 
-## 🏗️ Architecture
+Many great candidates are filtered out simply because their resumes don't speak the same language as the job description. JobSense AI bridges that gap. We don't just look for keywords; we use semantic understanding to evaluate your true fit for a role, just like a human recruiter would—but faster and more accurately.
 
+### 🌟 Core Features
+
+*   **🧠 Intelligent ATS Scoring:** Our AI engine deeply analyzes your resume against target job descriptions, providing a comprehensive score based on keyword density, skill matching, and experience alignment.
+*   **🔍 Keyword Gap Analysis:** Instantly discover which critical skills or keywords you're missing. We highlight the exact terms recruiters are looking for, so you can tailor your resume effectively.
+*   **💡 Actionable Improvement Suggestions:** Get concrete, AI-generated suggestions on how to improve your resume's impact, formatting, and content to increase your chances of securing an interview.
+*   **🤖 Conversational AI Coach:** Have questions about your resume strategy? Chat directly with our integrated AI coach (powered by Gemini) for personalized advice and dynamic feedback.
+*   **📊 Insightful Analytics Dashboard:** Track your progress over time. View your average ATS scores, top analyzed roles, and most frequently missing keywords to continuously refine your application strategy.
+*   **🔒 Secure User Accounts:** Your data is safe with us. We use robust JWT-based authentication and secure database storage for your resumes and analyses.
+*   **📄 Seamless Parsing:** Upload your resume in PDF or DOCX format, and our system will accurately extract the text for analysis.
+
+---
+
+## 🏗️ System Architecture
+
+JobSense AI is built with modern, scalable technologies, divided into three core microservices:
+
+```mermaid
+graph TD;
+    Frontend[Frontend: Next.js + React] <-->|REST API| Backend[Backend: Node.js + Express + Prisma];
+    Backend <-->|REST API| AIService[AI Service: FastAPI + Python];
+    Backend <--> Database[(PostgreSQL Database)];
 ```
-jobsense-ai/
-├── frontend/          # Next.js + TypeScript + Tailwind CSS
-├── backend/           # Node.js + Express API
-├── ai-service/        # Python FastAPI for NLP/embeddings
-└── README.md
-```
 
-## 🚀 Tech Stack
+1.  **Frontend (`/frontend`)**: The user-facing application, providing a beautiful, responsive, and intuitive interface with light and dark mode support.
+2.  **Backend (`/backend`)**: The core server handling business logic, user authentication, file uploads, database interactions, and orchestrating requests to the AI service.
+3.  **AI Service (`/ai-service`)**: A specialized Python microservice dedicated to heavy lifting: natural language processing, semantic matching, and generating AI insights using Google's Gemini models.
 
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express, Prisma ORM
-- **AI Service**: Python, FastAPI, `google-genai` (Gemini 2.5 Flash), sentence-transformers
-- **Database**: PostgreSQL
-- **Auth**: JWT tokens
+---
 
-## 📦 Setup
+## 🛠️ The Tech Stack
+
+We've carefully selected a modern stack to ensure performance, reliability, and an excellent developer experience.
+
+### 🎨 Frontend
+*   **Framework:** Next.js 14 (App Router)
+*   **UI Library:** React 18
+*   **Styling:** Tailwind CSS (with advanced theme-aware capabilities)
+*   **Language:** TypeScript
+*   **State & Data Fetching:** React Query (`@tanstack/react-query`)
+*   **Animations:** Framer Motion
+*   **Charts:** Recharts
+
+### ⚙️ Backend
+*   **Runtime:** Node.js
+*   **Framework:** Express.js
+*   **ORM:** Prisma
+*   **Database:** PostgreSQL
+*   **Authentication:** JWT, Passport.js (Google OAuth support)
+*   **File Parsing:** `pdf-parse`, `mammoth` (for DOCX)
+*   **Language:** TypeScript
+
+### 🧠 AI Service
+*   **Framework:** FastAPI (Python)
+*   **Server:** Uvicorn
+*   **AI Models:** Google GenAI (`gemini-2.5-flash`), Sentence Transformers (for embeddings)
+*   **Data Validation:** Pydantic
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
 
 ### Prerequisites
-- Node.js 18+
-- Python 3.10+
-- PostgreSQL 14+
 
-### Installation
+*   **Node.js** (v18 or higher)
+*   **Python** (v3.10 or higher)
+*   **PostgreSQL** (v14 or higher) - *Make sure it's running and you have created a database for the project.*
+*   **API Keys:** You will need a Google AI Studio API Key (for Gemini) and optionally Google OAuth credentials if you want to test social login.
 
-1. **Install dependencies:**
-   ```bash
-   npm run install:all
-   ```
+### Installation & Setup
 
-2. **Set up environment variables:**
-2. **Set up environment variables:**
-   - Copy `.env.example` to `.env` in all three directories (`/frontend`, `/backend`, `/ai-service`)
-   - Configure database connection, Google OAuth secrets, and your `GEMINI_API_KEY`
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yourusername/jobsense-ai.git
+    cd jobsense-ai
+    ```
 
-3. **Set up database:**
-   ```bash
-   cd backend
-   npx prisma generate
-   npx prisma migrate dev
-   ```
+2.  **Install Global Dependencies (if applicable):**
+    We recommend using a root-level script if available, otherwise, install dependencies in each directory.
+    ```bash
+    # If a root package.json exists:
+    npm run install:all 
+    ```
 
-4. **Set up Python service:**
-   ```bash
-   cd ai-service
-   pip install -r requirements.txt
-   ```
+3.  **Environment Configuration:**
+    You need to set up environment variables for all three services. We've provided `.env.example` files in each directory.
 
-5. **Run development servers:**
-   ```bash
-   npm run dev
-   ```
+    *   **Backend (`/backend/.env`):**
+        ```env
+        DATABASE_URL="postgresql://user:password@localhost:5432/jobsense"
+        JWT_SECRET="your_super_secret_jwt_key"
+        JWT_EXPIRES_IN="7d"
+        PORT=3001
+        # Add Google OAuth variables if needed
+        ```
+    *   **Frontend (`/frontend/.env.local`):**
+        ```env
+        NEXT_PUBLIC_API_URL="http://localhost:3001"
+        ```
+    *   **AI Service (`/ai-service/.env`):**
+        ```env
+        PORT=8000
+        GEMINI_API_KEY="your_google_gemini_api_key"
+        ```
 
-## 📁 Project Structure
+4.  **Database Initialization (Backend):**
+    ```bash
+    cd backend
+    npm install
+    npx prisma generate
+    npx prisma migrate dev --name init
+    ```
 
-### Frontend (`/frontend`)
-- Pages: `/login`, `/register`, `/dashboard`, `/analysis/[id]`, `/profile`
-- Components: Auth, ResumeUpload, JobDescription, AnalysisResults, Analytics
+5.  **Python Environment Setup (AI Service):**
+    We highly recommend using a virtual environment.
+    ```bash
+    cd ../ai-service
+    python -m venv venv
+    
+    # Activate virtual environment
+    # On Windows:
+    .\venv\Scripts\activate
+    # On macOS/Linux:
+    # source venv/bin/activate
+    
+    pip install -r requirements.txt
+    ```
 
-### Backend (`/backend`)
-- API routes: `/api/auth/*`, `/api/resume/*`, `/api/job/*`, `/api/analysis/*`, `/api/analytics/*`
-- Services: Auth, Resume parsing, ATS scoring
-- Database: Prisma schema and migrations
+### Running the Application
 
-### AI Service (`/ai-service`)
-### AI Service (`/ai-service`)
-- Endpoints: `/extract-text`, `/compute-embeddings`, `/score-resume-vs-jd`, `/chat`
-- Models: Gemini 2.5 Flash (`google-genai`) and Sentence transformers
+To run the full stack locally, you need to start all three services in separate terminal windows.
 
-## 🔐 Environment Variables
-
-### Backend
+**Terminal 1: Backend**
+```bash
+cd backend
+npm run dev
 ```
-DATABASE_URL="postgresql://user:password@localhost:5432/jobsense"
-JWT_SECRET="your-secret-key"
-JWT_EXPIRES_IN="7d"
-PORT=3001
+
+**Terminal 2: AI Service**
+```bash
+cd ai-service
+# Make sure your virtual environment is activated
+uvicorn main:app --reload --port 8000
 ```
 
-### Frontend
-```
-NEXT_PUBLIC_API_URL="http://localhost:3001"
-```
-
-### AI Service
-```
-PORT=8000
-GEMINI_API_KEY="your_google_ai_studio_api_key_here"
+**Terminal 3: Frontend**
+```bash
+cd frontend
+npm install # if not already done
+npm run dev
 ```
 
-## 📝 API Documentation
+Once all services are running, open your browser and navigate to `http://localhost:3000` to start using JobSense AI!
 
-See the backend code directly or explore the endpoints under `/backend/src/routes`.
+---
 
 ## 🧪 Testing
 
+We value code quality. Run the test suites for the respective services:
+
 ```bash
-# Backend tests
+# Run backend tests
 cd backend && npm test
 
-# Frontend tests
+# Run frontend tests
 cd frontend && npm test
 ```
 
-## 🚢 Deployment
+Currently, the AI service contains several local test scripts (e.g., `test_ats.py`, `test_auth_chat.py`) that can be run directly using Python to verify AI responses and scoring mechanisms.
 
-- Frontend: Vercel
-- Backend: Render/Railway
-- AI Service: Render/Railway
-- Database: Neon/Supabase
+---
+
+## 🚢 Deployment Overview
+
+JobSense AI is designed to be cloud-native and easily deployable. Here is our recommended deployment strategy:
+
+*   **Frontend:** [Vercel](https://vercel.com/) (Next.js native support provides the best experience).
+*   **Backend:** [Render](https://render.com/) or [Railway](https://railway.app/) as a Node.js web service.
+*   **AI Service:** [Render](https://render.com/) or [Railway](https://railway.app/) as a Python web service (ensure port binding uses the `$PORT` environment variable).
+*   **Database:** A managed PostgreSQL instance like [Neon](https://neon.tech/) or [Supabase](https://supabase.com/).
+
+*Please refer to `DEPLOYMENT_CHECKLIST.md` for detailed production deployment steps.*
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please to read our contributing guidelines (coming soon) and feel free to submit Pull Requests.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-MIT
-
+Distributed under the MIT License. See `LICENSE` for more information.
