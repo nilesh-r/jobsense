@@ -10,6 +10,7 @@ import analysisRoutes from './routes/analysis';
 import analyticsRoutes from './routes/analytics';
 import settingsRoutes from './routes/settings';
 import chatRoutes from './routes/chat';
+import advancedAiRoutes from './routes/advancedAiRoutes';
 
 dotenv.config();
 
@@ -90,6 +91,7 @@ app.use('/api/analysis', analysisRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/advanced-ai', advancedAiRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

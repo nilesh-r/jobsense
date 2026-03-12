@@ -14,6 +14,14 @@ app = FastAPI(title="JobSense AI Service", version="1.0.0")
 from google import genai
 from google.genai import types
 
+# Import advanced modules
+from modules.skill_extractor import extract_skills
+from modules.ats_predictor import predict_ats
+from modules.resume_rewriter import rewrite_resume_bullets
+from modules.job_recommender import recommend_jobs
+from modules.gap_analyzer import analyze_career_gap
+from modules.interview_generator import generate_interview_questions
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if GEMINI_API_KEY:
@@ -45,6 +53,27 @@ class ResumeAnalysisResponse(BaseModel):
     matched_skills: List[str]
     missing_skills: List[str]
     detailed_analysis: Optional[Dict[str, Any]] = None
+
+# Advanced AI request models
+class SkillExtractionRequest(BaseModel):
+    text: str
+
+class AtsPredictionRequest(BaseModel):
+    features: Dict[str, float]
+
+class RewriteResumeRequest(BaseModel):
+    bullets: List[str]
+
+class JobRecommendationRequest(BaseModel):
+    resume_embedding: List[float]
+    job_postings: List[Dict[str, Any]]
+
+class CareerGapRequest(BaseModel):
+    resume_text: str
+    target_job: str
+
+class InterviewGenRequest(BaseModel):
+    resume_text: str
 
 @app.get("/health")
 async def health_check():
@@ -280,6 +309,58 @@ async def chat_with_ai(request: ChatRequest):
         if "429" in error_msg or "quota" in error_msg or "rate limit" in error_msg or "too many requests" in error_msg:
             raise HTTPException(status_code=429, detail="AI Service rate limit reached. Please try again in a minute.")
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
+
+# --- Advanced AI Features ---
+
+@app.post("/extract-skills")
+async def api_extract_skills(request: SkillExtractionRequest):
+    if not client:
+        raise HTTPException(status_code=500, detail="Gemini API is not configured")
+    try:
+        return extract_skills(request.text, client)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/predict-ats-score")
+async def api_predict_ats(request: AtsPredictionRequest):
+    try:
+        return predict_ats(request.features)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/rewrite-resume")
+async def api_rewrite_resume(request: RewriteResumeRequest):
+    if not client:
+        raise HTTPException(status_code=500, detail="Gemini API is not configured")
+    try:
+        return rewrite_resume_bullets(request.bullets, client)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/recommend-jobs")
+async def api_recommend_jobs(request: JobRecommendationRequest):
+    try:
+        return recommend_jobs(request.resume_embedding, request.job_postings)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/career-gap-analysis")
+async def api_career_gap(request: CareerGapRequest):
+    if not client:
+        raise HTTPException(status_code=500, detail="Gemini API is not configured")
+    try:
+        return analyze_career_gap(request.resume_text, request.target_job, client)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/generate-interview-questions")
+async def api_generate_interview(request: InterviewGenRequest):
+    if not client:
+        raise HTTPException(status_code=500, detail="Gemini API is not configured")
+    try:
+        return generate_interview_questions(request.resume_text, client)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
