@@ -61,21 +61,23 @@ export function analyzeResume(resumeText: string, jobDescription: string): Scori
     }
   });
 
-  // Calculate scores
-  const totalKeywords = jdWords.filter(w => techKeywords.includes(w)).length || 1;
+  // Calculate scores - be more critical
+  const techKeywordsInJD = jdWords.filter(w => techKeywords.includes(w));
+  const totalKeywords = techKeywordsInJD.length || 1;
   const keywordScore = Math.round((matchedKeywords.length / totalKeywords) * 100);
 
-  // Skills score (based on tech keyword matches)
-  const skillsScore = keywordScore;
+  // Skills score (look for direct skill matches, more limited than keywords)
+  const skillsScore = Math.max(0, keywordScore - 15); // Stricter skills assessment for basic scoring
 
   // Experience score (check for experience indicators)
-  const hasExperience = experienceKeywords.some(keyword => resumeLower.includes(keyword));
-  const experienceScore = hasExperience ? 80 : 40;
+  const hasStrongExperience = experienceKeywords.slice(0, 5).some(keyword => resumeLower.includes(keyword));
+  const experienceScore = hasStrongExperience ? 85 : 45;
 
-  // Overall score (weighted average) + small variance to avoid constant results
-  const baseScore = keywordScore * 0.4 + skillsScore * 0.4 + experienceScore * 0.2;
-  const variance = Math.floor(Math.random() * 5) - 2; // -2 to +2
-  const overallScore = Math.round(baseScore + variance);
+  // Overall score (weighted average)
+  // No more static high scores. 
+  const baseScore = keywordScore * 0.35 + skillsScore * 0.35 + experienceScore * 0.3;
+  const variance = Math.floor(Math.random() * 8) - 4; // -4 to +4 for more variety
+  const overallScore = Math.max(10, Math.min(98, Math.round(baseScore + variance)));
 
   // Generate suggestions
   const suggestions: string[] = [];
