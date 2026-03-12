@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
+import type { User as PrismaUser } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
@@ -40,7 +41,7 @@ router.get('/summary', authenticate, async (req: AuthRequest, res) => {
     });
 
     const topRoles = Object.entries(roleCounts)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 5)
       .map(([title, count]) => ({ title, count }));
 
@@ -54,17 +55,17 @@ router.get('/summary', authenticate, async (req: AuthRequest, res) => {
     });
 
     const keywordCounts: Record<string, number> = {};
-    analysesForKeywords.forEach(analysis => {
+    analysesForKeywords.forEach((analysis: any) => {
       const missing = analysis.missingKeywords as string[];
       if (Array.isArray(missing)) {
-        missing.forEach(keyword => {
+        missing.forEach((keyword: string) => {
           keywordCounts[keyword] = (keywordCounts[keyword] || 0) + 1;
         });
       }
     });
 
     const commonMissingKeywords = Object.entries(keywordCounts)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 10)
       .map(([keyword, count]) => ({ keyword, count }));
 
@@ -77,7 +78,7 @@ router.get('/summary', authenticate, async (req: AuthRequest, res) => {
     });
 
     const scoreTrend = scoreTrendData
-      .map(a => ({
+      .map((a: any) => ({
         date: a.createdAt.toISOString(),
         score: a.atsScore,
         jobTitle: a.job.title

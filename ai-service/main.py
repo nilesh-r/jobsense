@@ -108,6 +108,9 @@ async def score_resume_vs_jd(request: ResumeAnalysisRequest):
             detailed_analysis={**detailed_analysis, "version": "v1.1-perfect-scoring"}
         )
     except Exception as e:
+        error_msg = str(e).lower()
+        if "429" in error_msg or "quota" in error_msg or "rate limit" in error_msg or "too many requests" in error_msg:
+            raise HTTPException(status_code=429, detail="AI Service rate limit reached. Please try again in a minute.")
         raise HTTPException(status_code=500, detail=f"Error processing request: {str(e)}")
 
 @app.post("/compute-embeddings")
@@ -127,6 +130,9 @@ async def compute_embeddings(texts: List[str]):
             "dimension": len(embeddings[0]) if len(embeddings) > 0 else 0
         }
     except Exception as e:
+        error_msg = str(e).lower()
+        if "429" in error_msg or "quota" in error_msg or "rate limit" in error_msg or "too many requests" in error_msg:
+            raise HTTPException(status_code=429, detail="AI Service rate limit reached. Please try again in a minute.")
         raise HTTPException(status_code=500, detail=f"Error computing embeddings: {str(e)}")
 
 class ChatRequest(BaseModel):
@@ -147,13 +153,13 @@ async def chat_with_ai(request: ChatRequest):
         if client:
             # Build conversation history for context
             history = []
-            if request.conversation_history:
+            if request.conversation_history is not None:
                 for msg in request.conversation_history:
                     role = "user" if msg.get("role") == "user" else "model"
                     history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg.get("content", ""))]))
                     
             chat_session = client.chats.create(
-                model='gemini-2.5-flash',
+                model='gemini-1.5-flash',
                 config=types.GenerateContentConfig(
                     system_instruction=(
                         "You are JobSense AI, an expert career coach and ATS optimization specialist. "
@@ -270,6 +276,9 @@ async def chat_with_ai(request: ChatRequest):
             suggestions=suggestions
         )
     except Exception as e:
+        error_msg = str(e).lower()
+        if "429" in error_msg or "quota" in error_msg or "rate limit" in error_msg or "too many requests" in error_msg:
+            raise HTTPException(status_code=429, detail="AI Service rate limit reached. Please try again in a minute.")
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
 
 if __name__ == "__main__":

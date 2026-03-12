@@ -29,17 +29,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ Handle auth errors (client-side only)
+// ✅ Handle auth errors and rate limiting (client-side only)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      typeof window !== 'undefined' &&
-      error.response?.status === 401
-    ) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (typeof window !== 'undefined') {
+      if (error.response?.status === 401) {
+        // Redirection on unauthorized
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+      } else if (error.response?.status === 429) {
+        // Rate limiting notification
+        console.error('API rate limit reached');
+      } else {
+        console.error(`API Error [${error.response?.status}]:`, error.message);
+      }
     }
     return Promise.reject(error);
   }

@@ -27,6 +27,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
         suggestions: aiResponse.data.suggestions || [],
       });
     } catch (error: any) {
+      if (error.response?.status === 429) {
+        return res.status(429).json({ error: 'AI Service rate limit reached. Please wait a minute and try again.' });
+      }
+
       // Fallback response if AI service is unavailable
       console.warn('AI service unavailable, using fallback');
       

@@ -53,7 +53,10 @@ router.post('/', authenticate, validateRequest(analyzeResumeSchema), async (req:
 
       embeddingSimilarity = aiResponse.data.similarity;
       detailedAnalysis = aiResponse.data.detailed_analysis;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 429) {
+        return res.status(429).json({ error: 'AI Service rate limit reached. Please wait a minute and try again.' });
+      }
       console.warn('AI service unavailable, using basic scoring only');
     }
 
