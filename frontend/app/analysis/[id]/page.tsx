@@ -210,7 +210,7 @@ export default function AnalysisPage() {
               {analysis.missingKeywords.map((keyword, idx) => (
                 <span
                   key={idx}
-                  className="bg-red-500/20 text-red-200 px-4 py-2 rounded-full text-sm font-medium border border-red-400/30"
+                  className="bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-200 px-4 py-2 rounded-full text-sm font-medium border border-red-500/20 dark:border-red-400/30"
                 >
                   {keyword}
                 </span>
@@ -227,7 +227,7 @@ export default function AnalysisPage() {
               {analysis.partialMatchKeywords.map((keyword, idx) => (
                 <span
                   key={idx}
-                  className="bg-yellow-500/20 text-yellow-200 px-4 py-2 rounded-full text-sm font-medium border border-yellow-400/30"
+                  className="bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-200 px-4 py-2 rounded-full text-sm font-medium border border-yellow-500/20 dark:border-yellow-400/30"
                 >
                   {keyword}
                 </span>
