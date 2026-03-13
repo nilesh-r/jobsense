@@ -2,7 +2,7 @@
 
 Welcome to **JobSense AI**, a cutting-edge full-stack web application designed to empower job seekers. In today's competitive job market, getting past the Applicant Tracking System (ATS) is half the battle. JobSense AI leverages advanced Artificial Intelligence to analyze your resume against job descriptions, providing you with actionable insights, intelligent scoring, and a strategic edge to land your dream job.
 
-![JobSense AI Banner](https://via.placeholder.com/1200x400?text=JobSense+AI+-+Unlock+Your+Career+Potential) <!-- Replace with an actual screenshot or banner -->
+![JobSense AI Home](screenshots/home.png)
 
 ---
 
@@ -11,6 +11,18 @@ Welcome to **JobSense AI**, a cutting-edge full-stack web application designed t
 *   **Live Application:** [https://jobsense-frontend.vercel.app/]
 *   **Backend API:** [https://jobsense.onrender.com]
 *   **AI Service API:** [https://jobsense-4.onrender.com]
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="45%" alt="Dashboard" />
+  <img src="screenshots/ai_features.png" width="45%" alt="Advanced AI Features" />
+  <br />
+  <img src="screenshots/analytics.png" width="45%" alt="Analytics Dashboard" />
+  <img src="screenshots/settings.png" width="45%" alt="Settings" />
+</p>
 
 ---
 
