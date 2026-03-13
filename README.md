@@ -16,7 +16,13 @@ Many great candidates are filtered out simply because their resumes don't speak 
 *   **🔍 Keyword Gap Analysis:** Instantly discover which critical skills or keywords you're missing. We highlight the exact terms recruiters are looking for, so you can tailor your resume effectively.
 *   **💡 Actionable Improvement Suggestions:** Get concrete, AI-generated suggestions on how to improve your resume's impact, formatting, and content to increase your chances of securing an interview.
 *   **🤖 Conversational AI Coach:** Have questions about your resume strategy? Chat directly with our integrated AI coach (powered by Gemini) for personalized advice and dynamic feedback.
-*   **📊 Insightful Analytics Dashboard:** Track your progress over time. View your average ATS scores, top analyzed roles, and most frequently missing keywords to continuously refine your application strategy.
+*   **📊 Insightful Analytics Dashboard:** Track your progress over time with advanced visualizations. Monitor skill coverage, receive job match recommendations, and access career roadmap suggestions.
+*   **🎯 Semantic Skill Extraction Engine:** Detects technical and conceptual skills from resumes and job descriptions using embedding-based semantic matching.
+*   **📈 ATS Score Prediction Model:** Machine learning model that predicts resume success probability and interview likelihood.
+*   **✍️ AI Resume Rewriter:** Automatically rewrites resume bullet points to improve clarity, impact, and ATS optimization.
+*   **💼 Job Recommendation Engine:** Recommends job roles based on resume skills using embedding similarity.
+*   **🛣️ Career Gap Analyzer:** Compares resume skills with target job roles and generates a learning roadmap.
+*   **🙋 Interview Question Generator:** Generates technical and behavioral interview questions based on resume content.
 *   **🔒 Secure User Accounts:** Your data is safe with us. We use robust JWT-based authentication and secure database storage for your resumes and analyses.
 *   **📄 Seamless Parsing:** Upload your resume in PDF or DOCX format, and our system will accurately extract the text for analysis.
 
@@ -35,7 +41,13 @@ graph TD;
 
 1.  **Frontend (`/frontend`)**: The user-facing application, providing a beautiful, responsive, and intuitive interface with light and dark mode support.
 2.  **Backend (`/backend`)**: The core server handling business logic, user authentication, file uploads, database interactions, and orchestrating requests to the AI service.
-3.  **AI Service (`/ai-service`)**: A specialized Python microservice dedicated to heavy lifting: natural language processing, semantic matching, and generating AI insights using Google's Gemini models.
+3.  **AI Service (`/ai-service`)**: A specialized Python microservice dedicated to heavy lifting: natural language processing, semantic matching, and generating AI insights. Key modules include:
+    *   **Skill Extraction Engine:** Performs semantic parsing of skills using embeddings.
+    *   **ATS Prediction Model:** An ML model predicting application success probability.
+    *   **Resume Rewriter:** Automatically enhances resume content for maximum ATS compatibility.
+    *   **Job Recommendation Engine:** Recommends tailored roles based on skill similarity.
+    *   **Career Gap Analyzer:** Identifies skill deficiencies and suggests specific learning paths.
+    *   **Interview Question Generator:** Creates context-aware interview preparation materials.
 
 ---
 
@@ -64,7 +76,9 @@ We've carefully selected a modern stack to ensure performance, reliability, and 
 ### 🧠 AI Service
 *   **Framework:** FastAPI (Python)
 *   **Server:** Uvicorn
-*   **AI Models:** Google GenAI (`gemini-2.5-flash`), Sentence Transformers (for embeddings)
+*   **AI Models:** Google GenAI (`gemini-2.0-flash`), Sentence Transformers (for semantic embeddings)
+*   **Machine Learning:** Random Forest / XGBoost models for predictive scoring
+*   **Search Engine:** Cosine similarity search for job recommendations
 *   **Data Validation:** Pydantic
 
 ---
