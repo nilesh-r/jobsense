@@ -6,6 +6,14 @@ Welcome to **JobSense AI**, a cutting-edge full-stack web application designed t
 
 ---
 
+## 🔗 Deployment Links
+
+*   **Live Application:** [https://jobsense-frontend.vercel.app/]
+*   **Backend API:** [https://jobsense.onrender.com]
+*   **AI Service API:** [https://jobsense-4.onrender.com]
+
+---
+
 ## ✨ Why JobSense AI?
 
 Many great candidates are filtered out simply because their resumes don't speak the same language as the job description. JobSense AI bridges that gap. We don't just look for keywords; we use semantic understanding to evaluate your true fit for a role, just like a human recruiter would—but faster and more accurately.
@@ -34,9 +42,33 @@ JobSense AI is built with modern, scalable technologies, divided into three core
 
 ```mermaid
 graph TD;
-    Frontend[Frontend: Next.js + React] <-->|REST API| Backend[Backend: Node.js + Express + Prisma];
-    Backend <-->|REST API| AIService[AI Service: FastAPI + Python];
-    Backend <--> Database[(PostgreSQL Database)];
+    subgraph Client_Layer [Frontend: Next.js + React]
+        UI[UI Components]
+        State[React Query / Auth State]
+    end
+
+    subgraph Server_Layer [Backend: Node.js + Express]
+        API[REST API Gateway]
+        Parser[File Parser PDF/DOCX]
+        Auth[JWT / Passport Auth]
+    end
+
+    subgraph AI_Layer [AI Service: FastAPI + Python]
+        Extractor[Skill Extraction Engine]
+        Predictor[ATS Prediction Model]
+        Rewriter[AI Resume Rewriter]
+        Recommender[Job Recommendation Engine]
+        Analyzer[Career Gap Analyzer]
+        Generator[Interview Question Generator]
+    end
+
+    Database[(PostgreSQL Database)]
+
+    UI <-->|JSON/HTTPS| API
+    API <-->|REST API| AI_Layer
+    API <-->|Prisma ORM| Database
+    Parser --- API
+    Auth --- API
 ```
 
 1.  **Frontend (`/frontend`)**: The user-facing application, providing a beautiful, responsive, and intuitive interface with light and dark mode support.
