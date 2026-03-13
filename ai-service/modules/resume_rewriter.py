@@ -25,7 +25,7 @@ def rewrite_resume_bullets(bullets: list[str], client: genai.Client) -> dict:
     text_input = "\\n".join(f"- {b}" for b in bullets)
     
     response = client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-flash-latest',
         config=types.GenerateContentConfig(
             response_mime_type='application/json',
             temperature=0.3,

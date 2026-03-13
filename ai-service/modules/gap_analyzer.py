@@ -33,7 +33,7 @@ def analyze_career_gap(resume_text: str, target_job: str, client: genai.Client) 
     """
     
     response = client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-flash-latest',
         config=types.GenerateContentConfig(
             response_mime_type='application/json',
             temperature=0.2,
